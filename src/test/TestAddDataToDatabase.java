@@ -11,6 +11,8 @@ import com.ex.qi.utils.DeviceUtils;
 import com.ex.qi.utils.IDUtils;
 import com.ex.qi.utils.SerialPortUtils;
 
+import java.sql.Date;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -115,33 +117,25 @@ public class TestAddDataToDatabase {
             history = yearKwhDao.queryHistoryData(id, route);
             current = current - history > 1 ? current : history - current > 1 ? history + current : current;
             updateYearKwh(yearKwhDao, id, current, route);
-
-            /**----------------------------------------------------------------------*/
-            AccumKwhDao accumDao = new AccumKwhDao();
-            String table = "";
             /**
+             * ----------------------------------------------------------------------
              * 更新AccumDayKwh
              */
+            String table = "";
             table = AccumKwhDao.KWH_ACCUM_DAY;
-            history = accumDao.findLatestData(table, id, route);
-            current = current - history > 1 ? current : history - current > 1 ? history + current : current;
             int hour = DateUtils.getHours();
-            updateAccumKwh(accumDao, table, id, route, current, hour, 25);
+            updateAccumKwh(table, id, route, current, hour, 25);
             /**
              * 更新AccumDayKwh
              */
             int day = DateUtils.getDay();
             table = AccumKwhDao.KWH_ACCUM_MONTH;
-            history = accumDao.findLatestData(table, id, route);
-            current = current - history > 1 ? current : history - current > 1 ? history + current : current;
-            updateAccumKwh(accumDao, table, id, route, current, day, 31);
+            updateAccumKwh(AccumKwhDao.KWH_ACCUM_MONTH, id, route, current, day, 31);
             /**
              * 更新AccumDayKwh
              */
             table = AccumKwhDao.KWH_ACCUM_YEAR;
-            history = accumDao.findLatestData(table, id, route);
-            current = current - history > 1 ? current : history - current > 1 ? history + current : current;
-            updateAccumKwh(accumDao, table, id, route, current, day, 366);
+            updateAccumKwh(AccumKwhDao.KWH_ACCUM_YEAR, id, route, current, day, 366);
         }
     }
 
@@ -241,8 +235,10 @@ public class TestAddDataToDatabase {
     }
 
 
-    private static void updateAccumKwh(AccumKwhDao dao, String table, String id, int route, float degree, int point, int count) {
-
+    private static void updateAccumKwh(String table, String id, int route, float current, int point, int count) {
+        AccumKwhDao dao = new AccumKwhDao();
+        float latestData = dao.findLatestData(table, id, route);
+        current = current - latestData > 1 ? current : latestData - current > 1 ? latestData + current : current;
         int num = dao.findsLatestNum(table, id, route);
         int total = dao.findTotalByRoute(table, id, route);
         if (-1 != num) {
@@ -250,26 +246,21 @@ public class TestAddDataToDatabase {
             if (point != lastPoint) {
                 if (count > total) {
                     num += 1;
-                    dao.addDataAtNum(table, new AccumKwh(IDUtils.getId(IDUtils.PASTDAY_KWH), id, route, degree, num, point));
+                    dao.addDataAtNum(table, new AccumKwh(IDUtils.getId(IDUtils.PASTDAY_KWH), id, route, current, num, point));
                 } else {
                     dao.deleteEarliestDataByInfo(table, id, route);
                 }
             } else {
-                dao.updateDataAtNum(table, degree, id, route, num, point);
+                dao.updateDataAtNum(table, current, id, route, num, point);
             }
         } else {
             num += 1;
-            dao.addDataAtNum(table, new AccumKwh(IDUtils.getId(IDUtils.PASTDAY_KWH), id, route, degree, num, point));
+            dao.addDataAtNum(table, new AccumKwh(IDUtils.getId(IDUtils.PASTDAY_KWH), id, route, current, num, point));
         }
     }
 
 
-    private static void updatePresentKwh(PresentKwhDao dao, String table, int currentPoint, String id, float degree, int route) {
-        int routes = dao.findTotalByRoute(table, id, route);
-        if (table.startsWith("Day")) {
-            if (0 != currentPoint) {
-                dao.updateDataAtPoint(table, degree, id, route, 1);
-            }
-        }
+    private static void updatePresentKwh(PresentKwhDao dao, String table, int currentPoint, String id, float current, int route) {
+
     }
 }

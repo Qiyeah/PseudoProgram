@@ -3,6 +3,7 @@ package com.ex.qi.dao.daoImpl;
 import com.ex.qi.dao.BaseDaoImpl;
 import com.ex.qi.entity.PresentKwh;
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -47,9 +48,9 @@ public class PresentKwhDao extends BaseDaoImpl {
         }
         return 0f;
     }
-    public float findLatestData(String table, String foreign, int route) {
-        String sql = "select degree from "+table+" where fk = ? and route = ? order by point desc ";
-        ResultSet set = query(sql, new Object[]{foreign, route});
+    public float findLatestData(String table, String foreign, int route,int point) {
+        String sql = "select degree from "+table+" where fk = ? and route = ? and point = ? ";
+        ResultSet set = query(sql, new Object[]{foreign, route,point});
         try {
             while (set.next()) {
                 float degree = set.getFloat("degree");
@@ -63,7 +64,7 @@ public class PresentKwhDao extends BaseDaoImpl {
         }
         return 0f;
     }
-    public int findTotalByRoute(String table,String foreign, int route) {
+    /*public int findTotalByRoute(String table,String foreign, int route) {
         int total = 0;
         String sql = "select count(_id) as total from "+table+" where fk = ? and route = ?";
         ResultSet result = query(sql, new Object[]{foreign, route});
@@ -75,6 +76,18 @@ public class PresentKwhDao extends BaseDaoImpl {
             return total;
         }
         return total;
-    }
-
+    }*/
+    /*public Date findLatestDay(String table,String foreign, int route){
+        String sql = "select top 1 dt from "+table+"where fk = ? and route = ? ";
+        ResultSet result = query(sql,new Object[]{foreign,route});
+        try {
+            if (result.next()){
+                Date date = result.getDate("dt");
+                return date;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }*/
 }
