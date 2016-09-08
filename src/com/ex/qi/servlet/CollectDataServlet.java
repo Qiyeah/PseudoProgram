@@ -47,7 +47,7 @@ public class CollectDataServlet extends HttpServlet {
             /*执行定时任务，第二个参数是首次执行任务的延时，第三个参数是执行定时任务的
             * 间隔时间，第四个参数是时间的类型
             * */
-            collectDataByConfig(out);
+            collectDataFromDevice();
 
         }
         if (UNCOLLECT_DATA.equals(cmd)) {
@@ -95,32 +95,30 @@ public class CollectDataServlet extends HttpServlet {
         return mKwhs;
     }
 
-    private void collectDataByConfig(PrintWriter out) {
-        /**
+    /*private void collectDataByConfig(PrintWriter out) {
+        *//**
          * 创建加载配置文件的工具,并加载配置表
-         */
+         *//*
         long start = System.currentTimeMillis();
         DeviceUtils deviceUtils = new DeviceUtils();
         List<Device> devices = deviceUtils.loadDevice();
-        /**
+        *//**
          * 遍历配置表
-         */
+         *//*
         System.out.println(devices.size());
         for (int i = 0; i < devices.size(); i++) {
 
             float[] degrees = new float[0];//临时存储计算好的电度数据
             SerialPortUtils serialPortUtils = new SerialPortUtils();
             Device device = devices.get(i);
-            /**
+            *//**
              * 通过配置工具解析设备通讯参数
-             */
+             *//*
             Map<String, Comparable> params = deviceUtils.parseToParams(device);
 
-
-
-            /**
+            *//**
              * 串口辅助工具,打开串口、发送命令、接收设备数据并解析、关闭串口
-             */
+             *//*
             serialPortUtils.open(params);//打开串口
             RealKwhDaoImpl dao = new RealKwhDaoImpl();
             if (device.getId().startsWith("AC")) {
@@ -184,11 +182,11 @@ public class CollectDataServlet extends HttpServlet {
         }
         long stop = System.currentTimeMillis();
         out.append("耗时：" + (stop - start));
-    }
+    }*/
     /**
      * 添加数据到数据库，包括DayKwh,MonthKwh,YearKwh,AccumDayKwh,AccumMonthKwh,AccumYearKwh.
      */
-    public void addDataToDatabase() {
+    public void collectDataFromDevice() {
         long start = System.currentTimeMillis();
         /*----------------------------------------------------------------*/
         Map<String, Comparable> params = null;//用来设置设备的通信参数

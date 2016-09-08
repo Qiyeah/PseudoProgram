@@ -44,7 +44,7 @@ public class TestSerialPort {
             Map<String, Comparable> params = deviceUtils.parseToParams(device);
             utils.open(params);
             float[] data = null;
-            if (id.startsWith("AC")) {
+           /* if (id.startsWith("AC")) {
                 AC iec = new AC();
                 int addr = Integer.parseInt(device.getAddr());
                 if (!(addr > 0xf)) {
@@ -61,9 +61,9 @@ public class TestSerialPort {
                     degrres = utils.parseACDegrees();
                     Map<Integer,Float> history = findRecentData("DayKwh",id);
                     data = new float[degrres.length];
-                    /*for (float degrre : degrres) {
+                    *//*for (float degrre : degrres) {
                         System.out.print(degrre + " ");
-                    }*/
+                    }*//*
                     for (int j = 1; j < degrres.length+1; j++) {
                         float hisValue = history.get(j);
                         float realValue = degrres[j-1];
@@ -71,7 +71,7 @@ public class TestSerialPort {
                     }
                     System.out.println();
                 }
-            } else if (id.startsWith("DC")) {
+            } else */if (id.startsWith("DC")) {
                 DC mod = new DC();
                 int addr = Integer.parseInt(device.getAddr());
                 mod.setAddr((byte) addr);
