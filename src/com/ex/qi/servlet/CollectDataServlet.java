@@ -287,7 +287,7 @@ public class CollectDataServlet extends HttpServlet {
         int curPoint = 0;
         String id = "";
         /**
-         * 以下操作，计算出数据在数据库中保存的时间刻度
+         * 以下操作，计算出数据在数据库中保存的时间刻度,及产生
          * 如：累计24小时，计算的结果为当前的小时数
          *      累计30天，计算的结果为当前天在一年中的第几天，然后模以31
          *      累计365天，计算的结果为当前天在一年中的第几天
@@ -324,7 +324,7 @@ public class CollectDataServlet extends HttpServlet {
                     // System.out.println(" --if->> count = "+count+" total"+total);
                     num += 1;
                     dao.addDataAtNum(table, new AccumKwh(id, fk, route, latestData, num, curPoint));
-                } else {
+                } else {//数据库中的记录总数超过定义好的记录总数
                     //System.out.println("--else->> count = "+count+" total"+total);
                     dao.deleteEarliestDataByInfo(table, fk, route);
                 }
@@ -332,7 +332,7 @@ public class CollectDataServlet extends HttpServlet {
                 //System.out.println(" --else->> curPoint = "+curPoint+" lastPoint"+lastPoint);
                 dao.updateDataAtNum(table, latestData, fk, route, num, curPoint);
             }
-        } else {
+        } else {//总数等于0，表示数据表中没有记录
             //System.out.println(" --else->> total = "+total);
             num += 1;
             dao.addDataAtNum(table, new AccumKwh(id, fk, route, latestData, num, curPoint));
