@@ -24,43 +24,30 @@ public class PresentKwh {
      */
     private int mPoint;
 
+    private int num;
+
     private Date mDate;
+    /**
+     * 对应数据库中的表： DayKwh,MothKwh,YearKwh
+     * @param id
+     * @param fId
+     * @param route
+     * @param degree
+     * @param point
+     */
+    public PresentKwh(String id, String fId, int route, float degree, int point,int num) {
+        this.num = num;
+        mId = id;
+        this.fId = fId;
+        mRoute = route;
+        mDegree = degree;
+        mPoint = point;
+    }
+
+
     public PresentKwh() {
     }
 
-    /**
-     * 对应数据库中的表： DayKwh,MothKwh,YearKwh
-     * @param id
-     * @param fId
-     * @param route
-     * @param degree
-     * @param point
-     */
-    public PresentKwh(String id, String fId, int route, float degree, int point) {
-        mId = id;
-        this.fId = fId;
-        mRoute = route;
-        mDegree = degree;
-        this.mPoint = point;
-    }
-
-    /**
-     * 对应数据库中的表： DayKwh,MothKwh,YearKwh
-     * @param id
-     * @param fId
-     * @param route
-     * @param degree
-     * @param point
-     * @param date
-     */
-    public PresentKwh(String id, String fId, int route, float degree, int point, Date date) {
-        mId = id;
-        this.fId = fId;
-        mRoute = route;
-        mDegree = degree;
-        this.mPoint = point;
-        mDate = date;
-    }
     public String getId() {
         return mId;
     }
@@ -105,7 +92,15 @@ public class PresentKwh {
         return mPoint;
     }
 
-    public void setpoint(int point) {
-        this.mPoint = point;
+    public int getNum() {
+        return num;
+    }
+
+    public void setNum(int num) {
+        this.num = num;
+    }
+
+    public void setPoint(int point) {
+        mPoint = point;
     }
 }

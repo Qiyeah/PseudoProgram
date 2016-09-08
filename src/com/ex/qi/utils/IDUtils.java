@@ -10,12 +10,12 @@ public class IDUtils {
     public static final int DC = 0x02;
     public static final int DEVICEINFO = 0x03;
     public static final int REAL_KWH = 0x04;
-    public static final int DAY_KWH = 0x05;
-    public static final int MONTH_KWH = 0x06;
-    public static final int YEAR_KWH = 0x07;
-    public static final int PASTDAY_KWH = 0x08;
-    public static final int PASTMONTH_KWH = 0x09;
-    public static final int PASTYEAR_KWH = 0x10;
+    public static final int KWH_DAY = 0x05;
+    public static final int KWH_MONTH = 0x06;
+    public static final int KWH_YEAR = 0x07;
+    public static final int KWH_ACCUM_DAY = 0x08;
+    public static final int KWH_ACCUM_MONTH = 0x09;
+    public static final int KWH_ACCUM_YEAR = 0x10;
     public static String randomStr29(){
         StringBuilder sb = new StringBuilder();
         sb.append(new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date()));
@@ -41,17 +41,17 @@ public class IDUtils {
             return "INF"+ randomStr29();
         }else if (REAL_KWH == type){
             return "REA"+ randomStr29();
-        }else if (DAY_KWH == type){
+        }else if (KWH_DAY == type){
             return "DAY"+ randomStr29();
-        }else if (MONTH_KWH == type){
+        }else if (KWH_MONTH == type){
             return "MON"+ randomStr29();
-        }else if (YEAR_KWH == type){
+        }else if (KWH_YEAR == type){
             return "YEA"+ randomStr29();
-        }else if (PASTDAY_KWH == type){
+        }else if (KWH_ACCUM_DAY == type){
             return "ACD"+ randomStr29();
-        }else if (PASTMONTH_KWH == type){
+        }else if (KWH_ACCUM_MONTH == type){
             return "ACM"+ randomStr29();
-        }else if (PASTYEAR_KWH == type){
+        }else if (KWH_ACCUM_YEAR == type){
             return "ACY"+ randomStr29();
         }
         return null;

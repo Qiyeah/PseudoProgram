@@ -1,6 +1,6 @@
 package com.ex.qi.dao.daoImpl;
 
-import com.ex.qi.dao.BaseDaoImpl;
+import com.ex.qi.dao.BaseKwhDao;
 import com.ex.qi.entity.AccumKwh;
 
 import java.sql.ResultSet;
@@ -9,10 +9,8 @@ import java.sql.SQLException;
 /**
  * Created by sunline on 2016/9/6.
  */
-public class AccumKwhDao extends BaseDaoImpl {
-    public static final String KWH_ACCUM_DAY = "AccumDayKwh";
-    public static final String KWH_ACCUM_MONTH = "AccumMonthKwh";
-    public static final String KWH_ACCUM_YEAR = "AccumYearKwh";
+public class AccumKwhDao extends BaseKwhDao {
+
     public boolean addDataAtNum(String table,AccumKwh kwh) {
         String sql = "insert into "+table+" (_id,fk,route,degree,num,point) values(?,?,?,?,?,?) ";
         try {
@@ -46,34 +44,7 @@ public class AccumKwhDao extends BaseDaoImpl {
         return point;
     }
 
-    public float getDegreeByInfo(String table,String foreign, int route, int num) {
-        String sql = "select degree from  "+table+"  where fk = ? and route = ? and num = ? ";
-        ResultSet resultSet = query(sql, new Object[]{foreign, route, num});
-        try {
-            while (resultSet.next()) {
-                float degree = resultSet.getFloat("degree");
-                if (0 != degree) {
-                    return degree;
-                }
-            }
-        } catch (SQLException e) {
-            //e.printStackTrace();
-        }
-        return 0f;
-    }
-    public float findLatestData(String table, String foreign, int route) {
-        String sql = "select top 1 degree from "+table+" where fk = ? and route = ? order by num desc ";
-        ResultSet set = query(sql, new Object[]{foreign, route});
-        try {
-            while (set.next()) {
-                return set.getFloat("degree");
-            }
-        } catch (SQLException e) {
-//            e.printStackTrace();
-            System.out.println("历史数据查询失败！");
-        }
-        return 0f;
-    }
+
 
     public boolean deleteEarliestDataByInfo(String table,String forein, int route) {
         boolean flag = false;
@@ -101,7 +72,56 @@ public class AccumKwhDao extends BaseDaoImpl {
         }
         return total;
     }
-    public int findsLatestNum(String table,String foreign, int route) {
+
+    public AccumKwh findInfoByNum(String table, String foreign, int route) {
+        AccumKwh kwh = new AccumKwh();
+        String sql = "select top 1 degree,point,num from "+table+" where fk = ? and route = ? order by num desc ";
+        ResultSet result = query(sql, new Object[]{foreign, route});
+        try {
+            if (result.next()) {
+                float degree = result.getFloat("degree");
+                int point= result.getInt("point");
+                int num = result.getInt("num");
+                kwh.setDegree(degree);
+                kwh.setPoint(point);
+                kwh.setNum(num);
+            }
+        } catch (SQLException e) {
+
+        }
+        return kwh;
+    }
+    public int findLastNum(String table,String foreign,int route){
+        String sql = "select top 1 num from "+table+" where fk = ? and route = ? order by num desc ";
+        ResultSet result = query(sql, new Object[]{foreign, route});
+        try {
+            if (result.next()) {
+                return result.getInt("num");
+            }
+        } catch (SQLException e) {
+
+        }
+        return -1;
+    }
+    public float getDegreeByNum(String table, String foreign, int route, int num) {
+        String sql = "select degree from  "+table+"  where fk = ? and route = ? and num = ? ";
+        ResultSet resultSet = query(sql, new Object[]{foreign, route, num});
+        try {
+            while (resultSet.next()) {
+                float degree = resultSet.getFloat("degree");
+                if (0 != degree) {
+                    return degree;
+                }
+            }
+        } catch (SQLException e) {
+            //e.printStackTrace();
+        }
+        return 0f;
+    }
+
+
+}
+/* public int findsLatestNum(String table,String foreign, int route) {
         int num = -1;
         String sql = "select top 1 num from "+table+" where fk = ? and route = ? order by num desc ";
         ResultSet result = query(sql, new Object[]{foreign, route});
@@ -113,5 +133,62 @@ public class AccumKwhDao extends BaseDaoImpl {
 
         }
         return num;
+    }*/
+
+/*
+ public float findLatestData(String table, String foreign, int route) {
+        String sql = "select top 1 degree from "+table+" where fk = ? and route = ? order by num desc ";
+        ResultSet set = query(sql, new Object[]{foreign, route});
+        try {
+            while (set.next()) {
+                return set.getFloat("degree");
+            }
+        } catch (SQLException e) {
+//            e.printStackTrace();
+            System.out.println("历史数据查询失败！");
+        }
+        return 0f;
     }
-}
+     */
+
+/*
+   */
+
+/* @Override
+    public float getStartDegree(String table, String foreign, int route) {
+        String sql = "select degree from  "+table+"  " +
+                "where fk = ? and route = ? and num = (" +
+                "select top 1 num from "+table+" " +
+                "where fk = ? and route = ? order by num) ";
+        ResultSet resultSet = query(sql,new Object[]{foreign,route,foreign,route});
+        try {
+            while (resultSet.next()) {
+                float degree = resultSet.getFloat("degree");
+                if (0 != degree) {
+                    return degree;
+                }
+            }
+        } catch (SQLException e) {
+            //e.printStackTrace();
+        }
+        return 0f;
+    }
+
+    @Override
+    public float getStopDegree(String table, String foreign, int route) {
+        int num = findLastNum(table,foreign,route);
+        String sql = "select degree from  "+table+"  " +
+                "where fk = ? and route = ? and num = "+num;
+        ResultSet resultSet = query(sql,new Object[]{foreign,route,foreign,route});
+        try {
+            while (resultSet.next()) {
+                float degree = resultSet.getFloat("degree");
+                if (0 != degree) {
+                    return degree;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0f;
+    }*/

@@ -3,10 +3,7 @@
   <component name="Encoding" defaultCharsetForPropertiesFiles="GBK">
     <file url="file://$PROJECT_DIR$/src/com/ex/qi/dao/BaseDao.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/com/ex/qi/dao/DeviceInfoDao.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/com/ex/qi/dao/daoImpl/DayKwhDaoImpl.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/com/ex/qi/dao/daoImpl/DeviceDaoImpl.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/com/ex/qi/dao/daoImpl/MonthKwhDaoImpl.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/com/ex/qi/dao/daoImpl/YearKwhDaoImpl.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/com/ex/qi/entity/AC.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/com/ex/qi/entity/RealKwh.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/com/ex/qi/observer/SerialObserver.java" charset="UTF-8" />
@@ -18,8 +15,6 @@
     <file url="file://$PROJECT_DIR$/src/com/ex/qi/utils/SerialPortUtils.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/com/ex/qi/utils/SerialReader.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/test/TestAddDataToDatabase.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/test/TestDeviceInfoDaoImpl.java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/test/TestPro.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/test/TestSerialPort.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/web/WEB-INF/lib" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/web/WEB-INF/lib/gson-2.5.jar" charset="GBK" />

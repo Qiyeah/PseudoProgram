@@ -1,10 +1,10 @@
 package com.ex.qi.utils;
 
+import com.ex.qi.dao.BaseKwhDao;
 import com.ex.qi.dao.DeviceInfoDao;
-import com.ex.qi.dao.daoImpl.DayKwhDaoImpl;
+import com.ex.qi.dao.daoImpl.AccumKwhDao;
 import com.ex.qi.dao.daoImpl.DeviceInfoDaoImpl;
-import com.ex.qi.dao.daoImpl.MonthKwhDaoImpl;
-import com.ex.qi.dao.daoImpl.YearKwhDaoImpl;
+import com.ex.qi.dao.daoImpl.PresentKwhDao;
 import com.ex.qi.entity.Device;
 import com.ex.qi.entity.DeviceInfo;
 
@@ -35,21 +35,16 @@ public class PUEUtils {
      * @return
      */
     public float calculatePue(int type) {
-
+        int startNum = -1;
+        int stopNum = -1;
         BaseKwhDao dao = null;
-        if (DAY_PUE == type){
-            dao = new DayKwhDaoImpl();
-        }else  if (MONTH_PUE == type){
-            dao = new MonthKwhDaoImpl();
-        }else  if (YEAR_PUE == type){
-            dao = new YearKwhDaoImpl();
-        }/*else  if (ACCUMDAY_PUE == type){
-            dao = new DayKwhDaoImpl();
-        }else  if (ACCUMMONTH_PUE == type){
-            dao = new DayKwhDaoImpl();
-        }else  if (ACCUMYEAR_PUE == type){
-            dao = new DayKwhDaoImpl();
-        }*/
+        if (DAY_PUE == type ||MONTH_PUE == type||YEAR_PUE == type){
+            dao = new PresentKwhDao();
+            startNum = 0;
+            stopNum = 1;
+        }else  if (ACCUMDAY_PUE == type||ACCUMMONTH_PUE == type||ACCUMYEAR_PUE == type){
+            dao = new AccumKwhDao();
+        }
         DeviceInfoDao infoDao = new DeviceInfoDaoImpl();
         List<Device> devices = new DeviceUtils().loadDevice();
         int size = devices.size();
@@ -62,24 +57,57 @@ public class PUEUtils {
         /**
          * 遍历所有设备
          */
+
         for (int i = 0; i < size; i++) {
             Device d = devices.get(i);
             String id = d.getId();
             List<DeviceInfo> infos = infoDao.findConfigByForeign(d.getId());
+           /* System.out.println("id = "+id);
+            System.out.println();*/
             /**
              * 遍历该设备的配置信息
              */
+
             for (int j = 0; j < infos.size(); j++) {
                 DeviceInfo info = infos.get(j);
                 int route = info.getPath();
                 int attr = info.getPathAttr();
                 int per = info.getPer() / 100;
                 int symbol = info.getSymbol();
+             /*   System.out.println("route = "+route);
+                System.out.println("attr = "+attr);
+                System.out.println("per = "+per);
+                System.out.println("symbol = "+symbol);
+                System.out.println();*/
                 /**
                  * 通过查询不同的表，得到计算PUE时的开始与结束电度值
                  */
-                tempStart = dao.getDegreeByInfo( id, route, 0);
-                tempEnd = dao.getDegreeByInfo(id, route, 1);
+                String table = "";
+                if (DAY_PUE == type ){
+                    table = BaseKwhDao.KWH_DAY;
+
+                }else if (MONTH_PUE == type){
+                    table = BaseKwhDao.KWH_MONTH;
+                }else if (YEAR_PUE == type){
+                    table = BaseKwhDao.KWH_YEAR;
+                }else  if (ACCUMDAY_PUE == type){
+                    table = BaseKwhDao.KWH_ACCUM_DAY;
+                    stopNum = dao.findLastNum(table,id,route);
+                    startNum = stopNum - 23;
+                }else  if (ACCUMMONTH_PUE == type){
+                    table = BaseKwhDao.KWH_ACCUM_MONTH;
+                    stopNum = dao.findLastNum(table,id,route);
+                    startNum = stopNum - 29;
+                }else  if (ACCUMYEAR_PUE == type){
+                    table = BaseKwhDao.KWH_ACCUM_YEAR;
+                    stopNum = dao.findLastNum(table,id,route);
+                    startNum = stopNum - 364;
+                }
+                tempStart = dao.getDegreeByNum(table, id, route,startNum);
+                tempEnd =dao.getDegreeByNum(table, id, route,stopNum);
+               /* System.out.println("tempStart = "+tempStart);
+                System.out.println("tempEnd = "+tempEnd);
+                System.out.println();*/
                 /**
                  * 计算totalStart,totalEnd,ITStart,ITEnd
                  */
@@ -94,6 +122,12 @@ public class PUEUtils {
                 }
             }
         }
+        System.out.println();
+        System.out.println("totalEnd = "+totalEnd);
+        System.out.println("totalStart = "+totalStart);
+        System.out.println("ITEnd = "+ITEnd);
+        System.out.println("ITStart = "+ITStart);
+
         return (totalEnd - totalStart) / (ITEnd - ITStart);
     }
 }

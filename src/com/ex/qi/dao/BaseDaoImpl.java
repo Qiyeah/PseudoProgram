@@ -1,6 +1,5 @@
 package com.ex.qi.dao;
 
-import com.ex.qi.dao.BaseDao;
 import com.ex.qi.db.DBUtils;
 
 import java.sql.Connection;

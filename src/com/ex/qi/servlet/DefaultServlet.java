@@ -60,8 +60,6 @@ public class DefaultServlet extends HttpServlet {
         if (!mBaseDao.tableIsExists("AccumYearKwh")){
             mTableUtils.newAccumYearKwhTable();
         }
-
-
         mBaseDao = null;
         mTableUtils = null;
     }

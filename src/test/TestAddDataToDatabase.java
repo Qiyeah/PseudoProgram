@@ -11,8 +11,6 @@ import com.ex.qi.utils.DeviceUtils;
 import com.ex.qi.utils.IDUtils;
 import com.ex.qi.utils.SerialPortUtils;
 
-import java.sql.Date;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -25,10 +23,11 @@ public class TestAddDataToDatabase {
     public static final int DC_TIMEOUT = 1;
 
     public static void main(String[] args) {
-        for (int i = 1; i < 5000; i++) {
+        for (int i = 1; i < 5000*100; i++) {
             System.out.println("采集程序第 【 " + i + " 】次运行");
             addDataToDatabase();
         }
+
     }
 
     /**
@@ -58,14 +57,14 @@ public class TestAddDataToDatabase {
                     portUtils.sendMessage(cmd, AC_TIMEOUT);
                     if (flag) {
                         float[] degrees = portUtils.parseACDegrees();//把数据解析成电度数值
-                        addDataToRealKwh(id, degrees);//添加数据到RealKwh
+                        addData2Database(id, degrees);//添加数据到RealKwh
 //                        System.out.println("\n-***************************************************-");
                     }
                 } else if (id.startsWith("DC")) {//判断为直流电间
                     portUtils.sendMessage(cmd, DC_TIMEOUT);
                     if (flag) {
                         float[] degrees = portUtils.parseDCDegrees();//把数据解析成电度数值
-                        addDataToRealKwh(id, degrees);//添加数据到RealKwh
+                        addData2Database(id, degrees);//添加数据到RealKwh
 //                        System.out.println("\n-***************************************************-");
                     }
                 }
@@ -77,190 +76,145 @@ public class TestAddDataToDatabase {
     }
 
     /**
-     * 添加数据到RealKwh数据表中
+     * 添加数据到数据库中的六张表
      *
      * @param id
      * @param degrees
      */
-    private static void addDataToRealKwh(String id, float[] degrees) {
-        float history;
-        float current;
+    private static void addData2Database(String id, float[] degrees) {
+        float curDegree;
         int route = 0;
         for (int j = 0; j < degrees.length; j++) {
             route = j + 1;
-            current = degrees[j];
-//            System.out.print(degrees[j] + " ");
+            curDegree = degrees[j];
             /**
              * 更新ReakKwh中的数据
              */
             RealKwhDaoImpl realKwhDao = new RealKwhDaoImpl();//操作表RealKwh
-            RealKwh realKwh = new RealKwh(IDUtils.getId(IDUtils.REAL_KWH), id, route, current);
+            RealKwh realKwh = new RealKwh(IDUtils.getId(IDUtils.REAL_KWH), id, route, curDegree);
             realKwhDao.addRealDegree(realKwh);
             /**
              * 更新DayKwh中的数据
              */
-            DayKwhDaoImpl dayKwhDao = new DayKwhDaoImpl();
-            history = dayKwhDao.queryHistoryData(id, route);
-            current = current - history > 1 ? current : history - current > 1 ? history + current : current;
-            updateDayKwh(dayKwhDao, id, current, route);
+            updatePresentKwh(PresentKwhDao.KWH_DAY,id,curDegree,route);
             /**
              * 更新MonthKwh中的数据
              */
-            MonthKwhDaoImpl monthKwhDao = new MonthKwhDaoImpl();
-            history = monthKwhDao.queryHistoryData(id, route);
-            current = current - history > 1 ? current : history - current > 1 ? history + current : current;
-            updateMonthKwh(monthKwhDao, id, current, route);
+            updatePresentKwh(PresentKwhDao.KWH_MONTH,id,curDegree,route);
             /**
              * 更新MonthKwh中的数据
              */
-            YearKwhDaoImpl yearKwhDao = new YearKwhDaoImpl();
-            history = yearKwhDao.queryHistoryData(id, route);
-            current = current - history > 1 ? current : history - current > 1 ? history + current : current;
-            updateYearKwh(yearKwhDao, id, current, route);
+            updatePresentKwh(PresentKwhDao.KWH_YEAR,id,curDegree,route);
             /**
              * ----------------------------------------------------------------------
              * 更新AccumDayKwh
              */
-            String table = "";
-            table = AccumKwhDao.KWH_ACCUM_DAY;
-            int hour = DateUtils.getHours();
-            updateAccumKwh(table, id, route, current, hour, 25);
+           updateAccumKwh(AccumKwhDao.KWH_ACCUM_DAY, id, route, curDegree, 25);
             /**
              * 更新AccumDayKwh
              */
-            int day = DateUtils.getDay();
-            table = AccumKwhDao.KWH_ACCUM_MONTH;
-            updateAccumKwh(AccumKwhDao.KWH_ACCUM_MONTH, id, route, current, day, 31);
+            updateAccumKwh(AccumKwhDao.KWH_ACCUM_MONTH, id, route, curDegree, 31);
             /**
              * 更新AccumDayKwh
              */
-            table = AccumKwhDao.KWH_ACCUM_YEAR;
-            updateAccumKwh(AccumKwhDao.KWH_ACCUM_YEAR, id, route, current, day, 366);
+            updateAccumKwh(AccumKwhDao.KWH_ACCUM_YEAR, id, route, curDegree, 366);
         }
     }
 
 
-    /**
-     * 更新数据到DayKwh表中
-     *
-     * @param dayKwhDao
-     * @param id
-     * @param degree
-     * @param route
-     */
-    private static void updateDayKwh(DayKwhDaoImpl dayKwhDao, String id, float degree, int route) {
-        String table = "DayKwh";
-        int hour = DateUtils.getHours();//获得当前的小时数
-        /**
-         * 1、小时数是否为0，如果为零，查找到为0的记录，并用新数据去替换。
-         * 2、不为0，查找是否有其他小时的数据存在，如果存在，替换掉数据，如果不存在，增加当前小时数的数据。
-         */
-        if (0 == hour) {
-            // System.out.println("当前为0点整");
-            boolean hasStart = dayKwhDao.routeHasStart(id, route);
-            if (!hasStart) {
-                // System.out.println("当前为0点整，没有开始记录");
-                dayKwhDao.addDataAtPoint(new PresentKwh(IDUtils.getId(IDUtils.DAY_KWH), id, route, degree, hour));
-            } else {
-                // System.out.println("当前为0点整，已经有了记录");
-                dayKwhDao.updateDataAtpoint(degree, id, route, hour);
-            }
-        } else {
-            //System.out.println("当前时刻不为0点");
-            boolean hasEnd = dayKwhDao.routeHasEnd(id, route);
-            if (!hasEnd) {
-                //  System.out.println("当前时刻不为0点，没有");
-                dayKwhDao.addDataAtPoint(new PresentKwh(IDUtils.getId(IDUtils.DAY_KWH), id, route, degree, 1));
-            } else {
-                dayKwhDao.updateDataAtpoint(degree, id, route, 1);
-            }
+    private static void updateAccumKwh(String table, String fk, int route, float curDegree,int count) {
+        int curPoint = 0;
+        String id = "";
+        if (table.equalsIgnoreCase(AccumKwhDao.KWH_ACCUM_DAY)) {
+            id = IDUtils.getId(IDUtils.KWH_ACCUM_DAY);
+            curPoint =  DateUtils.getHours();
+        } else if (table.equalsIgnoreCase(AccumKwhDao.KWH_ACCUM_MONTH)) {
+            id = IDUtils.getId(IDUtils.KWH_ACCUM_MONTH);
+            curPoint =  DateUtils.getDay()%31;
+        } else if (table.equalsIgnoreCase(AccumKwhDao.KWH_ACCUM_YEAR)) {
+            id = IDUtils.getId(IDUtils.KWH_YEAR);
+            curPoint =  DateUtils.getDay();
         }
-    }
-
-    /**
-     * 更新数据到MonthKwh表中
-     *
-     * @param monthKwhDao
-     * @param id
-     * @param degree
-     * @param route
-     */
-    private static void updateMonthKwh(MonthKwhDaoImpl monthKwhDao, String id, float degree, int route) {
-        int day = DateUtils.getDay();
-        int hour = DateUtils.getHours();
-        if (0 == hour && 1 == day) {
-            boolean hasStart = monthKwhDao.routeHasStart(id, route);
-            if (!hasStart) {
-                monthKwhDao.addDataAtPoint(new PresentKwh(IDUtils.getId(IDUtils.DAY_KWH), id, route, degree, hour));
-            } else {
-                monthKwhDao.updateDataAtpoint(degree, id, route, hour);
-            }
-        } else {
-            boolean hasEnd = monthKwhDao.routeHasEnd(id, route);
-            if (!hasEnd) {
-                monthKwhDao.addDataAtPoint(new PresentKwh(IDUtils.getId(IDUtils.DAY_KWH), id, route, degree, 1));
-            } else {
-                monthKwhDao.updateDataAtpoint(degree, id, route, 1);
-            }
-        }
-    }
-
-    /**
-     * 更新数据到YearKwh表中
-     *
-     * @param yearKwhDao
-     * @param id
-     * @param degree
-     * @param route
-     */
-    private static void updateYearKwh(YearKwhDaoImpl yearKwhDao, String id, float degree, int route) {
-        int month = DateUtils.getMonth();
-        int day = DateUtils.getDay();
-        int hour = DateUtils.getHours();
-        if (0 == hour && 1 == day && 1 == month) {
-            boolean hasStart = yearKwhDao.routeHasStart(id, route);
-            if (!hasStart) {
-                yearKwhDao.addDataAtPoint(new PresentKwh(IDUtils.getId(IDUtils.DAY_KWH), id, route, degree, hour));
-            } else {
-                yearKwhDao.updateDataAtpoint(degree, id, route, hour);
-            }
-        } else {
-            boolean hasEnd = yearKwhDao.routeHasEnd(id, route);
-            if (!hasEnd) {
-                yearKwhDao.addDataAtPoint(new PresentKwh(IDUtils.getId(IDUtils.DAY_KWH), id, route, degree, 1));
-            } else {
-                yearKwhDao.updateDataAtpoint(degree, id, route, 1);
-            }
-        }
-    }
-
-
-    private static void updateAccumKwh(String table, String id, int route, float current, int point, int count) {
+        //System.out.println("id = "+id +" curPoint = "+curPoint);
         AccumKwhDao dao = new AccumKwhDao();
-        float latestData = dao.findLatestData(table, id, route);
-        current = current - latestData > 1 ? current : latestData - current > 1 ? latestData + current : current;
-        int num = dao.findsLatestNum(table, id, route);
-        int total = dao.findTotalByRoute(table, id, route);
-        if (-1 != num) {
-            int lastPoint = dao.findLatestPoint(table, id, route, num);
-            if (point != lastPoint) {
+        AccumKwh kwh = dao.findInfoByNum(table, fk, route);
+        float latestData = kwh.getDegree();
+        latestData = curDegree - latestData > 1 ? curDegree : latestData - curDegree > 1 ? latestData + curDegree : curDegree;
+        int num = kwh.getNum();
+        int total = dao.findTotalByRoute(table, fk, route);
+        if (0 != total) {
+            //System.out.println(" --if->> total = "+total);
+            int lastPoint = dao.findLatestPoint(table, fk, route, num);
+            if (curPoint != lastPoint) {
+                //System.out.println(" --if->> curPoint = "+curPoint+" lastPoint"+lastPoint);
                 if (count > total) {
+                   // System.out.println(" --if->> count = "+count+" total"+total);
                     num += 1;
-                    dao.addDataAtNum(table, new AccumKwh(IDUtils.getId(IDUtils.PASTDAY_KWH), id, route, current, num, point));
+                    dao.addDataAtNum(table, new AccumKwh(id, fk, route, curDegree, num, curPoint));
                 } else {
-                    dao.deleteEarliestDataByInfo(table, id, route);
+                    //System.out.println("--else->> count = "+count+" total"+total);
+                    dao.deleteEarliestDataByInfo(table, fk, route);
                 }
             } else {
-                dao.updateDataAtNum(table, current, id, route, num, point);
+                //System.out.println(" --else->> curPoint = "+curPoint+" lastPoint"+lastPoint);
+                dao.updateDataAtNum(table, curDegree, fk, route, num, curPoint);
             }
         } else {
+            //System.out.println(" --else->> total = "+total);
             num += 1;
-            dao.addDataAtNum(table, new AccumKwh(IDUtils.getId(IDUtils.PASTDAY_KWH), id, route, current, num, point));
+            dao.addDataAtNum(table, new AccumKwh(id, fk, route, curDegree, num, curPoint));
         }
     }
 
 
-    private static void updatePresentKwh(PresentKwhDao dao, String table, int currentPoint, String id, float current, int route) {
-
+    private static void updatePresentKwh( String table, String fk, float curDegree, int route) {
+        PresentKwhDao dao = new PresentKwhDao();
+        int curHour = DateUtils.getHours();
+        int curPoint = DateUtils.getDay();
+        String id = "";
+        if (table.equalsIgnoreCase(PresentKwhDao.KWH_DAY)) {
+            id = IDUtils.getId(IDUtils.KWH_DAY);
+        } else if (table.equalsIgnoreCase(PresentKwhDao.KWH_MONTH)) {
+            id = IDUtils.getId(IDUtils.KWH_MONTH);
+        } else if (table.equalsIgnoreCase(PresentKwhDao.KWH_YEAR)) {
+            id = IDUtils.getId(IDUtils.KWH_YEAR);
+        }
+        PresentKwh kwh = dao.findInfoByNum(table, fk, route);
+        float latestDegree = kwh.getDegree();
+        int num = kwh.getNum();
+        int lastPoint = kwh.getPoint();
+        int routes = dao.findTotalByRoute(table, fk, route);
+        latestDegree = curDegree - latestDegree > 1 ? curDegree : latestDegree - curDegree > 1 ? latestDegree + curDegree : curDegree;
+        if (0 != routes) {//判断数据库中有记录
+            //System.out.println(" --if->> routes = "+routes);
+          /*  System.out.println(" -- if (0 != routes)->> curHour = "+curHour);
+            System.out.println(" -- if (0 != routes)->> updatePoint = "+curPoint);
+            System.out.println(" -- if (0 != routes)->> lastPoint = "+lastPoint);*/
+            if (0 == curHour && curPoint > lastPoint) {//时间为0点，天数已经过去一天
+                dao.updateDataAtPoint(table, latestDegree, fk, route, lastPoint, curPoint, 0);//更新0点的数据
+            }
+            dao.updateDataAtPoint(table, latestDegree, fk, route, lastPoint, curPoint, 1);
+        } else {//判断数据库中没有记录
+            // System.out.println(" --else->> routes = "+routes);
+            if (0 == curHour) {
+                //System.out.println(" --if->> curHour = "+curHour);
+                dao.addDataAtPoint(table, new PresentKwh(id, fk, route, latestDegree, curPoint, 0));
+            } else {
+                //System.out.println(" --else->> curHour = "+curHour);
+                dao.addDataAtPoint(table, new PresentKwh(id, fk, route, 0f, curPoint, 0));
+            }
+            if (table.equalsIgnoreCase(PresentKwhDao.KWH_DAY)) {
+                id = IDUtils.getId(IDUtils.KWH_DAY);
+            } else if (table.equalsIgnoreCase(PresentKwhDao.KWH_MONTH)) {
+                id = IDUtils.getId(IDUtils.KWH_MONTH);
+            } else if (table.equalsIgnoreCase(PresentKwhDao.KWH_YEAR)) {
+                id = IDUtils.getId(IDUtils.KWH_YEAR);
+            }
+            dao.addDataAtPoint(table, new PresentKwh(id, fk, route, latestDegree, curPoint, 1));
+        }
     }
 }
+
+
+
+

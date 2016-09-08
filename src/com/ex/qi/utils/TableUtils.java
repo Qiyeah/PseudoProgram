@@ -33,6 +33,7 @@ public class TableUtils extends BaseDaoImpl {
                 "route SMALLINT NULL," +
                 "degree  REAL  NULL," +
                 "point SMALLINT NULL," +
+                "num SMALLINT NULL," +
                 "dt DATE NULL DEFAULT getdate()," +
                 "PRIMARY KEY (_id) " +
                 ");" +
@@ -52,6 +53,7 @@ public class TableUtils extends BaseDaoImpl {
                 "route DECIMAL(3) NULL," +
                 "degree  REAL  NULL," +
                 "point SMALLINT NULL," +
+                "num SMALLINT NULL," +
                 "dt DATETIME  NULL DEFAULT getdate()," +
                 "PRIMARY KEY (_id) " +
                 ");" +
@@ -71,6 +73,7 @@ public class TableUtils extends BaseDaoImpl {
                 "route DECIMAL(3) NULL," +
                 "degree  REAL  NULL," +
                 "point SMALLINT NULL," +
+                "num SMALLINT NULL," +
                 "dt DATE  NULL DEFAULT getdate()," +
                 "PRIMARY KEY (_id) " +
                 ");" +
