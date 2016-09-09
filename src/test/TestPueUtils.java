@@ -10,11 +10,6 @@ public class TestPueUtils {
         for (int i = 0; i < 1000 * 50; i++) {
             System.out.println("第 【 "+i+" 】 次计算的PUE值");
             System.out.println("--***************************************************--");
-            try {
-                Thread.sleep(300);
-            } catch (InterruptedException e) {
-
-            }
             printPue();
         }
     }

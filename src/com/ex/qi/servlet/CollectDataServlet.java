@@ -4,10 +4,7 @@ import com.ex.qi.dao.daoImpl.AccumKwhDao;
 import com.ex.qi.dao.daoImpl.PresentKwhDao;
 import com.ex.qi.dao.daoImpl.RealKwhDaoImpl;
 import com.ex.qi.entity.*;
-import com.ex.qi.utils.DateUtils;
-import com.ex.qi.utils.DeviceUtils;
-import com.ex.qi.utils.IDUtils;
-import com.ex.qi.utils.SerialPortUtils;
+import com.ex.qi.utils.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -18,41 +15,58 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Date;
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 /**
  * Created by sunline on 2016/8/24.
  */
 @WebServlet(name = "collect", urlPatterns = "/CollectDataServlet")
-public class CollectDataServlet extends HttpServlet {
+public class CollectDataServlet extends HttpServlet implements Runnable {
     public static final int AC_TIMEOUT = 30;
     public static final int DC_TIMEOUT = 1;
-    private int delayRead = 1;
-    boolean isOpen = false;
+    boolean isOpen = true;
     private static String COLLECT_DATA = "1";
     private static String UNCOLLECT_DATA = "2";
 
     @Override
     public void init() throws ServletException {
         super.init();
-        delayRead = 1;
+        ScheduledExecutorService service = Executors
+                .newSingleThreadScheduledExecutor();
+        if (isOpen) {
+                /*执行定时任务，第二个参数是首次执行任务的延时，第三个参数是执行定时任务的
+                 间隔时间，第四个参数是时间的类型
+                 */
+            service.scheduleAtFixedRate(this, 1, 10, TimeUnit.SECONDS);
+        }
     }
 
+    PrintWriter out = null;
+    int count = 0;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
         String cmd = req.getParameter("key").trim();
-        PrintWriter out = resp.getWriter();
-        if (COLLECT_DATA.equals(cmd)) {
-            /*执行定时任务，第二个参数是首次执行任务的延时，第三个参数是执行定时任务的
-            * 间隔时间，第四个参数是时间的类型
-            * */
-            collectDataFromDevice();
-
-        }
-        if (UNCOLLECT_DATA.equals(cmd)) {
-
-        }
+        long start = System.currentTimeMillis();
+        req.setCharacterEncoding("utf-8");
+        resp.setContentType("text/html;charset=utf-8");
+        out = resp.getWriter();
+        out.append("<center>");
+        out.append("<table width=\"30%\" border=\"1\" cellspacing=\"0\" cellpadding=\"5\" bgcolor=\"#B5F900\">");
+        out.append("<tr><td align=\"right\">Key</td>" +
+                "<td>" + cmd + "</td></tr>");
+        out.append("<tr><td align=\"right\">请求次数统计</td>" +
+                "<td>" + (count++) + "</td></tr>");
+        printPue(out);
+        long end = System.currentTimeMillis();
+        out.append("<tr><td align=\"right\">耗时</td>" +
+                "<td>" + (end - start) + "</td></tr>");
+        out.append("</table></center>");
+        out.flush();
+        out.close();
     }
 
     @Override
@@ -60,133 +74,16 @@ public class CollectDataServlet extends HttpServlet {
         doGet(req, resp);
     }
 
-    private byte[] generateIECMessage(Device device) {
-        AC iec = new AC();
-        int addr = Integer.parseInt(device.getAddr().trim());
-        if (!(addr > 0xf)) {
-            iec.setADRHi((byte) 0x30);
-            iec.setADRLo(Integer.toHexString(addr).getBytes()[0]);
-        } else {
-            iec.setADRHi(Integer.toHexString(addr / 16).getBytes()[0]);
-            iec.setADRLo(Integer.toHexString(addr % 16).getBytes()[0]);
-        }
-        iec.parseCheksum();
-        return iec.produceCmdBytes();
+    @Override
+    public void destroy() {
+        super.destroy();
+        out = null;
     }
 
-    private byte[] generateMODMessage(Device device) {
-        DC mod = new DC();
-        int addr = Integer.parseInt(device.getAddr().trim());
-        mod.setAddr((byte) addr);
-        mod.setFunction((byte) 0x03);
-        mod.setMemeryHi((byte) 0x02);
-        mod.setMemeryLo((byte) 0x0E);
-        mod.setCountHi((byte) 0x00);
-        mod.setCountLo((byte) 0x20);
-        mod.parseCRC();
-        return mod.produceCmdBytes();
-    }
-
-    private List<RealKwh> parse2List(float[] degrees, String fId) {
-        List<RealKwh> mKwhs = new ArrayList<>();
-        for (int j = 0; j < degrees.length; j++) {
-            mKwhs.add(new RealKwh(IDUtils.getId(IDUtils.REAL_KWH), fId, j + 1, degrees[j], new Date(System.currentTimeMillis())));
-        }
-        return mKwhs;
-    }
-
-    /*private void collectDataByConfig(PrintWriter out) {
-        *//**
-         * 创建加载配置文件的工具,并加载配置表
-         *//*
-        long start = System.currentTimeMillis();
-        DeviceUtils deviceUtils = new DeviceUtils();
-        List<Device> devices = deviceUtils.loadDevice();
-        *//**
-         * 遍历配置表
-         *//*
-        System.out.println(devices.size());
-        for (int i = 0; i < devices.size(); i++) {
-
-            float[] degrees = new float[0];//临时存储计算好的电度数据
-            SerialPortUtils serialPortUtils = new SerialPortUtils();
-            Device device = devices.get(i);
-            *//**
-             * 通过配置工具解析设备通讯参数
-             *//*
-            Map<String, Comparable> params = deviceUtils.parseToParams(device);
-
-            *//**
-             * 串口辅助工具,打开串口、发送命令、接收设备数据并解析、关闭串口
-             *//*
-            serialPortUtils.open(params);//打开串口
-            RealKwhDaoImpl dao = new RealKwhDaoImpl();
-            if (device.getId().startsWith("AC")) {
-                AC iec = new AC();
-                int addr = Integer.parseInt(device.getAddr().trim());
-                if (!(addr > 0xf)) {
-                    iec.setADRHi((byte) 0x30);
-                    iec.setADRLo(Integer.toHexString(addr).getBytes()[0]);
-                } else {
-                    iec.setADRHi(Integer.toHexString(addr / 16).getBytes()[0]);
-                    iec.setADRLo(Integer.toHexString(addr % 16).getBytes()[0]);
-                }
-                iec.parseCheksum();
-                byte[] msg = iec.produceCmdBytes();
-                serialPortUtils.sendMessage(msg, AC_TIMEOUT);
-                if (serialPortUtils.getPortState()) {
-                    degrees = serialPortUtils.parseACDegrees();
-                    out.println("这里是正常使用的多路表的电度数据：");
-                    out.print("<br>");
-                    out.print("<hr>");
-                    out.print("<br>");
-                    for (int j = 0; j < degrees.length; j++) {
-                        System.out.print(degrees[j] + " ");
-                        out.print(degrees[j] + " ");
-                        RealKwh d = new RealKwh(IDUtils.getId(IDUtils.REAL_KWH), device.getId(), j + 1, degrees[j]);
-                        dao.addRealDegree(d);
-                    }
-                    out.print("<br>");
-                    System.out.println();
-                }
-            } else if (device.getId().startsWith("DC")) {
-                DC mod = new DC();
-                int addr = Integer.parseInt(device.getAddr().trim());
-                mod.setAddr((byte) addr);
-                mod.setFunction((byte) 0x03);
-                mod.setMemeryHi((byte) 0x02);
-                mod.setMemeryLo((byte) 0x0E);
-                mod.setCountHi((byte) 0x00);
-                mod.setCountLo((byte) 0x20);
-                mod.parseCRC();
-                byte[] msg = mod.produceCmdBytes();
-                serialPortUtils.sendMessage(msg, DC_TIMEOUT);
-                if (serialPortUtils.getPortState()) {
-                    degrees = serialPortUtils.parseDCDegrees();
-                    out.println("这里是正常使用的直流电间的电度数据：");
-                    out.print("<br>");
-                    out.print("<hr>");
-                    out.print("<br>");
-                    for (int j = 0; j < degrees.length; j++) {
-                        System.out.print(degrees[j] + " ");
-                        out.print(degrees[j] + " ");
-                        RealKwh d = new RealKwh(IDUtils.getId(IDUtils.REAL_KWH), device.getId(), j + 1, degrees[j]);
-                        dao.addRealDegree(d);
-                    }
-                    out.print("<br>");
-                }
-            }
-
-
-            serialPortUtils.close();//关闭串口
-        }
-        long stop = System.currentTimeMillis();
-        out.append("耗时：" + (stop - start));
-    }*/
     /**
      * 添加数据到数据库，包括DayKwh,MonthKwh,YearKwh,AccumDayKwh,AccumMonthKwh,AccumYearKwh.
      */
-    public void collectDataFromDevice() {
+    public void collectDataFromDevice(PrintWriter out) {
         long start = System.currentTimeMillis();
         /*----------------------------------------------------------------*/
         Map<String, Comparable> params = null;//用来设置设备的通信参数
@@ -211,14 +108,14 @@ public class CollectDataServlet extends HttpServlet {
                     if (flag) {
                         float[] degrees = portUtils.parseACDegrees();//把数据解析成电度数值
                         addData2Database(id, degrees);//添加数据到RealKwh
-//                        System.out.println("\n-***************************************************-");
+//                        System.out.println("-***************************************************-");
                     }
                 } else if (id.startsWith("DC")) {//判断为直流电间
                     portUtils.sendMessage(cmd, DC_TIMEOUT);
                     if (flag) {
                         float[] degrees = portUtils.parseDCDegrees();//把数据解析成电度数值
                         addData2Database(id, degrees);//添加数据到RealKwh
-//                        System.out.println("\n-***************************************************-");
+//                        System.out.println("-***************************************************-");
                     }
                 }
                 portUtils.close();//每次采集完毕，关闭串口
@@ -227,6 +124,7 @@ public class CollectDataServlet extends HttpServlet {
         long end = System.currentTimeMillis();
         System.out.println("耗时：" + (end - start));
     }
+
     /**
      * 添加数据到数据库中的六张表
      *
@@ -248,15 +146,15 @@ public class CollectDataServlet extends HttpServlet {
             /**
              * 更新DayKwh中的数据
              */
-            updatePresentKwh(PresentKwhDao.KWH_DAY,id,curDegree,route);
+            updatePresentKwh(PresentKwhDao.KWH_DAY, id, curDegree, route);
             /**
              * 更新MonthKwh中的数据
              */
-            updatePresentKwh(PresentKwhDao.KWH_MONTH,id,curDegree,route);
+            updatePresentKwh(PresentKwhDao.KWH_MONTH, id, curDegree, route);
             /**
              * 更新MonthKwh中的数据
              */
-            updatePresentKwh(PresentKwhDao.KWH_YEAR,id,curDegree,route);
+            updatePresentKwh(PresentKwhDao.KWH_YEAR, id, curDegree, route);
             /**
              * ----------------------------------------------------------------------
              * 更新AccumDayKwh
@@ -275,13 +173,14 @@ public class CollectDataServlet extends HttpServlet {
 
     /**
      * 更新累计电度值，包括AccumDayKwh,AccumMonthKwh,AccumYearKwh
-     * @param table 更新数据库中的表名称
-     * @param fk 当前通道对应的设备ID
-     * @param route 当前通道号
+     *
+     * @param table     更新数据库中的表名称
+     * @param fk        当前通道对应的设备ID
+     * @param route     当前通道号
      * @param curDegree 当前通道采集到的电度值
-     * @param count 累计数据需要在数据库中保存的记录数量
+     * @param count     累计数据需要在数据库中保存的记录数量
      */
-    private void updateAccumKwh(String table, String fk, int route, float curDegree,int count) {
+    private void updateAccumKwh(String table, String fk, int route, float curDegree, int count) {
         int curPoint = 0;
         String id = "";
         /**
@@ -292,13 +191,13 @@ public class CollectDataServlet extends HttpServlet {
          */
         if (table.equalsIgnoreCase(AccumKwhDao.KWH_ACCUM_DAY)) {
             id = IDUtils.getId(IDUtils.KWH_ACCUM_DAY);
-            curPoint =  DateUtils.getHours();
+            curPoint = DateUtils.getHours();
         } else if (table.equalsIgnoreCase(AccumKwhDao.KWH_ACCUM_MONTH)) {
             id = IDUtils.getId(IDUtils.KWH_ACCUM_MONTH);
-            curPoint =  DateUtils.getDay()%31;
+            curPoint = DateUtils.getDay() % 31;
         } else if (table.equalsIgnoreCase(AccumKwhDao.KWH_ACCUM_YEAR)) {
             id = IDUtils.getId(IDUtils.KWH_YEAR);
-            curPoint =  DateUtils.getDay();
+            curPoint = DateUtils.getDay();
         }
         //System.out.println("id = "+id +" curPoint = "+curPoint);
         AccumKwhDao dao = new AccumKwhDao();
@@ -339,12 +238,13 @@ public class CollectDataServlet extends HttpServlet {
 
     /**
      * 更新当前电度值，包括DayKwh,MonthKwh,YearKwh.
-     * @param table 更新数据库中的表名称
-     * @param fk 当前通道对应的设备ID
+     *
+     * @param table     更新数据库中的表名称
+     * @param fk        当前通道对应的设备ID
      * @param curDegree 当前通道采集到的电度值
-     * @param route 当前通道号
+     * @param route     当前通道号
      */
-    private void updatePresentKwh( String table, String fk, float curDegree, int route) {
+    private void updatePresentKwh(String table, String fk, float curDegree, int route) {
         PresentKwhDao dao = new PresentKwhDao();
         int curHour = DateUtils.getHours();
         int curPoint = DateUtils.getDay();
@@ -389,5 +289,45 @@ public class CollectDataServlet extends HttpServlet {
             }
             dao.addDataAtPoint(table, new PresentKwh(id, fk, route, latestDegree, curPoint, 1));
         }
+    }
+
+    private void printPue(PrintWriter out) {
+        PUEUtils utils = new PUEUtils();
+        float pue = utils.calculatePue(PUEUtils.DAY_PUE);
+        System.out.println("   当日PUE:" + pue);
+        out.print("<tr>" +
+                "<td align=\"right\">当日</td>" +
+                "<td>" + pue + "</td>" +
+                "</tr>");
+        pue = utils.calculatePue(PUEUtils.MONTH_PUE);
+        out.append("<tr>" +
+                "<td align=\"right\">当月</td>" +
+                "<td>" + pue + "</td>" +
+                "</tr>");
+        pue = utils.calculatePue(PUEUtils.YEAR_PUE);
+        out.append("<tr>" +
+                "<td align=\"right\">当月</td>" +
+                "<td>" + pue + "</td>" +
+                "</tr>");
+        pue = utils.calculatePue(PUEUtils.ACCUMDAY_PUE);
+        out.append("<tr>" +
+                "<td align=\"right\">当月</td>" +
+                "<td>" + pue + "</td>" +
+                "</tr>");
+        pue = utils.calculatePue(PUEUtils.ACCUMMONTH_PUE);
+        out.append("<tr>" +
+                "<td align=\"right\">30天累计PUE</td>" +
+                "<td>" + pue + "</td>" +
+                "</tr>");
+        pue = utils.calculatePue(PUEUtils.ACCUMYEAR_PUE);
+        out.append("<tr>" +
+                "<td align=\"right\">365天累计PUE</td>" +
+                "<td>" + pue + "</td>" +
+                "</tr>");
+    }
+
+    @Override
+    public void run() {
+        collectDataFromDevice(out);
     }
 }
