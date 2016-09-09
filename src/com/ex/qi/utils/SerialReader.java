@@ -1,12 +1,10 @@
 package com.ex.qi.utils;
 
-import com.ex.qi.observer.SerialObserver;
 import gnu.io.*;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -21,12 +19,13 @@ public abstract class SerialReader extends Observable implements SerialPortEvent
     public static final String PARAMS_STOPBITS = "stop bits"; // 停止位
     public static final String PARAMS_PARITY = "parity"; // 奇偶校验
     public static final String PARAMS_RATE = "rate"; // 波特率
-    private static byte[] readBuffer = new byte[1024]; // 4k的buffer空间,缓存串口读入的数据
+    private static byte[] bytes = new byte[1024]; // 4k的buffer空间,缓存串口读入的数据
     int delayRead = 100;
 
-    int numBytes; // buffer中的实际数据字节数
-    InputStream inputStream;
-    OutputStream outputStream;
+    int len; // buffer中的实际数据字节数
+
+    InputStream inputStream = null;
+    OutputStream outputStream = null;
     static SerialPort serialPort;
     Map serialParams;
     static CommPortIdentifier portId;
@@ -90,7 +89,7 @@ public abstract class SerialReader extends Observable implements SerialPortEvent
                 //TODO 数据回转时间
                 Thread.sleep(100 * delay);
                 transformData(data);
-                data = new byte[0];
+                data = new int[0];
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -114,7 +113,6 @@ public abstract class SerialReader extends Observable implements SerialPortEvent
             }
         }
     }
-
     @Override
     public void serialEvent(SerialPortEvent serialPortEvent) {
         switch (serialPortEvent.getEventType()) {
@@ -131,10 +129,9 @@ public abstract class SerialReader extends Observable implements SerialPortEvent
             case SerialPortEvent.DATA_AVAILABLE: // 1
                 try {
                     // 多次读取,将所有数据读入
-                    while (inputStream.available() > 0) {
-                        numBytes = inputStream.read(readBuffer);
+                    while ( 0 < (len = inputStream.read(bytes))) {
+                        onDataReceived(bytes,len);
                     }
-                    changeMessage(readBuffer, numBytes);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -142,22 +139,26 @@ public abstract class SerialReader extends Observable implements SerialPortEvent
         }
     }
 
-    private byte[] data = new byte[0];
+    private int[] data = new int[0];
 
     // 通过observer pattern将收到的数据发送给observer
     // 将buffer中的空字节删除后再发送更新消息,通知观察者
-    public void changeMessage(byte[] message, int length) {
-        byte[] temp = Arrays.copyOfRange(message, 0, length);
+    public void onDataReceived(byte[] source, int length) {
+        byte[] temp = Arrays.copyOfRange(source, 0, length);
         data = copyArray(data, temp);
     }
 
-    public byte[] copyArray(byte[] target, byte[] source) {
-        byte[] temp = new byte[target.length + source.length];
+    public int[] copyArray(int[] target, byte[] source) {
+        int[] temp = new int[target.length + source.length];
         for (int i = 0; i < target.length; i++) {
             temp[i] = target[i];
         }
         for (int i = 0; i < source.length; i++) {
-            temp[i + target.length] = source[i];
+            if (source[i]<0){
+                temp[i + target.length] = source[i]+256;
+            }else {
+                temp[i + target.length] = source[i];
+            }
         }
         return temp;
     }
@@ -213,7 +214,7 @@ public abstract class SerialReader extends Observable implements SerialPortEvent
         }
         return h;
     }
-    public abstract void transformData(byte[] data);
+    public abstract void transformData(int[] data);
     public boolean getPortState(){
         return isOpen;
     }

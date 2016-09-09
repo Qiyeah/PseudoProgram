@@ -5,19 +5,31 @@ import com.ex.qi.entity.Device;
 import gnu.io.SerialPort;
 import test.TestSerialPort;
 
+import javax.swing.*;
+import java.io.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.logging.Level;
 
 /**
  * Created by sunline on 2016/8/23.
  */
 public class SerialPortUtils extends SerialReader {
-    byte[] data = new byte[0];
-
+    int[] data = new int[0];
+    private static final String CRLF = "\r\n";
     @Override
-    public void transformData(byte[] data) {
+    public void transformData(int[] data) {
         if (null != data && 0 < data.length) {
+            /*System.out.println();
+            System.out.println();
+            System.out.println("--****************原始数据*********************--");
+            for (int i = 0; i < data.length; i++) {
+                System.out.print(data[i] + " ");
+            }
+            System.out.println("\n--*********************************************--");
+            System.out.println();
+            System.out.println();*/
             this.data = data;
         } else {
             close();
@@ -26,8 +38,8 @@ public class SerialPortUtils extends SerialReader {
 
     public float[] parseACDegrees() {
         if (data.length > 0) {
-            byte[] data = Arrays.copyOfRange(this.data, 19, this.data.length - 1);
-            byte[][] arr = new byte[5][8];
+            int[] data = Arrays.copyOfRange(this.data, 19, this.data.length - 1);
+            int[][] arr = new int[5][8];
             float[] result = new float[5];
             int x = 0;
             for (int i = 0; i < data.length; i++) {
@@ -47,6 +59,7 @@ public class SerialPortUtils extends SerialReader {
                 try {
                     result[i] = Float.intBitsToFloat(Integer.parseInt((str4 + str3 + str2 + str1), 16));
                 } catch (NumberFormatException e) {
+                    printErrorLog(str4 + str3 + str2 + str1,str4 + str3 + str2 + str1);
                     //e.printStackTrace();
                 }
             }
@@ -56,29 +69,40 @@ public class SerialPortUtils extends SerialReader {
             return null;
     }
 
+    private int dCount = 0;
+
     public float[] parseDCDegrees() {
+        dCount += 1;
         String temp = "";
-        if (null != data && 0 < data.length) {
-            float[] degrees = new float[(this.data.length - 5) / 4];
-            for (int i = 3; i < this.data.length - 2; i++) {
-                temp += this.data[i];
-               // System.out.println(temp);
-                if ((i - 2) % 4 == 0) {
-                    degrees[(i - 3) / 4] = Integer.parseInt(temp) / 10f;
-                    temp = "";
-                }
-/*
-                System.out.println(data.length);
-                for (byte b : data) {
-                    System.out.print(b + " ");
-                }*/
-            }
-            return degrees;
+        String error = " ";
+        float[] degrees = new float[(this.data.length - 5) / 4];
+        String str ="";
+        for (int i : data) {
+            str+=i+" ";
         }
-        return null;
+        if (null != data && 0 < data.length) {
+            for (int i = 3; i < this.data.length - 2; i++) {
+                temp += Integer.toHexString(this.data[i]);
+                error += this.data[i] + " ";
+                if ((i - 2) % 4 == 0) {
+                    try {
+                        degrees[(i - 3) / 4] = Integer.parseInt(temp,16) / 10.0f;
+//                        System.out.println( degrees[(i - 3) / 4]);
+                    } catch (NumberFormatException e) {
+//                        e.printStackTrace();
+                        System.out.println("=错误数据：=>>"+error);
+                        printErrorLog(error,str);
+                        return null;
+                    }
+                    temp = "";
+                    error = null;
+                }
+            }
+        }
+        return degrees;
     }
 
-    public String byte2HexString(byte b) {
+    public String byte2HexString(int b) {
         if (b <= 57) {
             return Integer.toHexString(b % 0x30);
         }
@@ -88,7 +112,62 @@ public class SerialPortUtils extends SerialReader {
         return "";
     }
 
-    public byte[] getData() {
+    private static void printErrorLog(String error,String str) {
+        File file = null;
+        OutputStreamWriter writer = null;
+        InputStreamReader reader = null;
+        BufferedReader bufReader = null;
+        FileInputStream fis = null;
+        FileOutputStream fos = null;
+        BufferedWriter bufWriter = null;
+        try {
+            file = new File("F:/java_space/PseudoProgram/out/artifacts/PseudoProgram_war_exploded/log.txt");
+            fis = new FileInputStream(file);
+            reader = new InputStreamReader(fis);
+            bufReader = new BufferedReader(reader);
+            fos = new FileOutputStream(file,true);
+            writer = new OutputStreamWriter(fos);
+            bufWriter = new BufferedWriter(writer);
+            String line = null;
+            while (null != (line = bufReader.readLine())) {
+                //bufWriter.write(line + "\r\n");
+                System.out.println(line);
+            }
+            bufWriter.write("-->>原数据");
+            bufWriter.write("-----------------------------------------------");
+            bufWriter.write(CRLF);
+            bufWriter.write(str);
+            bufWriter.write(CRLF);
+            bufWriter.write("-->>出错字节");
+            bufWriter.write(CRLF);
+            bufWriter.write("-----------------------------------------------");
+            bufWriter.write(CRLF);
+            bufWriter.write(error + CRLF);
+            bufWriter.write("-----------------------------------------------");
+            bufWriter.write(CRLF);
+
+        } catch (FileNotFoundException e1) {
+            e1.printStackTrace();
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        } finally {
+            try {
+                file = null;
+                bufWriter.flush();
+                bufWriter.close();
+                fis.close();
+                reader.close();
+                bufReader.close();
+                fos.close();
+                writer.close();
+
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+        }
+    }
+
+    public int[] getData() {
         return data;
     }
 

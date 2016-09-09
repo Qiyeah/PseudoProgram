@@ -21,9 +21,14 @@ import java.util.Map;
 public class TestAddDataToDatabase {
     public static final int AC_TIMEOUT = 30;
     public static final int DC_TIMEOUT = 1;
+    public static SerialPortUtils portUtils = new SerialPortUtils();//操作串口的工具类
+    public static DeviceUtils deviceUtils = new DeviceUtils();//操作设备的工具类
+    public static List<Device> devices = deviceUtils.loadDevice();//加载所有配置好的设备
+    public static Map<String, Comparable> params = null;//用来设置设备的通信参数
 
     public static void main(String[] args) {
-        for (int i = 1; i < 5000*100; i++) {
+
+        for (int i = 1; i < 5000 * 100; i++) {
             System.out.println("采集程序第 【 " + i + " 】次运行");
             addDataToDatabase();
         }
@@ -36,10 +41,7 @@ public class TestAddDataToDatabase {
     public static void addDataToDatabase() {
         long start = System.currentTimeMillis();
         /*----------------------------------------------------------------*/
-        Map<String, Comparable> params = null;//用来设置设备的通信参数
-        SerialPortUtils portUtils = new SerialPortUtils();//操作串口的工具类
-        DeviceUtils deviceUtils = new DeviceUtils();//操作设备的工具类
-        List<Device> devices = deviceUtils.loadDevice();//加载所有配置好的设备
+
         int deviceSize = devices.size();//设备数量
         if (null != devices && 0 < deviceSize) {//判断是否已经配置设备
             for (int i = 0; i < deviceSize; i++) {//遍历所有设备
@@ -57,14 +59,19 @@ public class TestAddDataToDatabase {
                     portUtils.sendMessage(cmd, AC_TIMEOUT);
                     if (flag) {
                         float[] degrees = portUtils.parseACDegrees();//把数据解析成电度数值
-                        addData2Database(id, degrees);//添加数据到RealKwh
+                        addData2Database(id, degrees);
 //                        System.out.println("\n-***************************************************-");
                     }
                 } else if (id.startsWith("DC")) {//判断为直流电间
                     portUtils.sendMessage(cmd, DC_TIMEOUT);
+               /*     for (byte b : cmd) {
+                        System.out.print(b +" ");
+                    }*/
                     if (flag) {
                         float[] degrees = portUtils.parseDCDegrees();//把数据解析成电度数值
-                        addData2Database(id, degrees);//添加数据到RealKwh
+                        if (null != degrees && 0 != degrees.length) {
+                            addData2Database(id, degrees);
+                        }
 //                        System.out.println("\n-***************************************************-");
                     }
                 }
@@ -96,20 +103,20 @@ public class TestAddDataToDatabase {
             /**
              * 更新DayKwh中的数据
              */
-            updatePresentKwh(PresentKwhDao.KWH_DAY,id,curDegree,route);
+            updatePresentKwh(PresentKwhDao.KWH_DAY, id, curDegree, route);
             /**
              * 更新MonthKwh中的数据
              */
-            updatePresentKwh(PresentKwhDao.KWH_MONTH,id,curDegree,route);
+            updatePresentKwh(PresentKwhDao.KWH_MONTH, id, curDegree, route);
             /**
              * 更新MonthKwh中的数据
              */
-            updatePresentKwh(PresentKwhDao.KWH_YEAR,id,curDegree,route);
+            updatePresentKwh(PresentKwhDao.KWH_YEAR, id, curDegree, route);
             /**
              * ----------------------------------------------------------------------
              * 更新AccumDayKwh
              */
-           updateAccumKwh(AccumKwhDao.KWH_ACCUM_DAY, id, route, curDegree, 25);
+            updateAccumKwh(AccumKwhDao.KWH_ACCUM_DAY, id, route, curDegree, 25);
             /**
              * 更新AccumDayKwh
              */
@@ -122,18 +129,18 @@ public class TestAddDataToDatabase {
     }
 
 
-    private static void updateAccumKwh(String table, String fk, int route, float curDegree,int count) {
+    private static void updateAccumKwh(String table, String fk, int route, float curDegree, int count) {
         int curPoint = 0;
         String id = "";
         if (table.equalsIgnoreCase(AccumKwhDao.KWH_ACCUM_DAY)) {
             id = IDUtils.getId(IDUtils.KWH_ACCUM_DAY);
-            curPoint =  DateUtils.getHours();
+            curPoint = DateUtils.getHours();
         } else if (table.equalsIgnoreCase(AccumKwhDao.KWH_ACCUM_MONTH)) {
             id = IDUtils.getId(IDUtils.KWH_ACCUM_MONTH);
-            curPoint =  DateUtils.getDay()%31;
+            curPoint = DateUtils.getDay() % 31;
         } else if (table.equalsIgnoreCase(AccumKwhDao.KWH_ACCUM_YEAR)) {
             id = IDUtils.getId(IDUtils.KWH_YEAR);
-            curPoint =  DateUtils.getDay();
+            curPoint = DateUtils.getDay();
         }
         //System.out.println("id = "+id +" curPoint = "+curPoint);
         AccumKwhDao dao = new AccumKwhDao();
@@ -148,7 +155,7 @@ public class TestAddDataToDatabase {
             if (curPoint != lastPoint) {
                 //System.out.println(" --if->> curPoint = "+curPoint+" lastPoint"+lastPoint);
                 if (count > total) {
-                   // System.out.println(" --if->> count = "+count+" total"+total);
+                    // System.out.println(" --if->> count = "+count+" total"+total);
                     num += 1;
                     dao.addDataAtNum(table, new AccumKwh(id, fk, route, curDegree, num, curPoint));
                 } else {
@@ -167,7 +174,7 @@ public class TestAddDataToDatabase {
     }
 
 
-    private static void updatePresentKwh( String table, String fk, float curDegree, int route) {
+    private static void updatePresentKwh(String table, String fk, float curDegree, int route) {
         PresentKwhDao dao = new PresentKwhDao();
         int curHour = DateUtils.getHours();
         int curPoint = DateUtils.getDay();

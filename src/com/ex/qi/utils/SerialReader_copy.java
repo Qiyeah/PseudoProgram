@@ -12,18 +12,18 @@ import java.util.*;
  * Created by sunline on 2016/7/20.
  */
 public class SerialReader_copy extends Observable implements Runnable, SerialPortEventListener {
-    // ¶Ë¿Ú¶ÁÈëÊý¾ÝÊÂ¼þ´¥·¢ºó,µÈ´ýnºÁÃëºóÔÙ¶ÁÈ¡,ÒÔ±ãÈÃÊý¾ÝÒ»´ÎÐÔ¶ÁÍê
-    public static final String PARAMS_DELAY = "delay read"; // ÑÓÊ±µÈ´ý¶Ë¿ÚÊý¾Ý×¼±¸µÄÊ±¼ä
-    public static final String PARAMS_TIMEOUT = "timeout"; // ³¬Ê±Ê±¼ä
-    public static final String PARAMS_PORT = "port name"; // ¶Ë¿ÚÃû³Æ
-    public static final String PARAMS_DATABITS = "data bits"; // Êý¾ÝÎ»
+    // ï¿½Ë¿Ú¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½,ï¿½È´ï¿½nï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù¶ï¿½È¡,ï¿½Ô±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ô¶ï¿½ï¿½ï¿½
+    public static final String PARAMS_DELAY = "delay read"; // ï¿½ï¿½Ê±ï¿½È´ï¿½ï¿½Ë¿ï¿½ï¿½ï¿½ï¿½ï¿½×¼ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½
+    public static final String PARAMS_TIMEOUT = "timeout"; // ï¿½ï¿½Ê±Ê±ï¿½ï¿½
+    public static final String PARAMS_PORT = "port name"; // ï¿½Ë¿ï¿½ï¿½ï¿½ï¿½ï¿½
+    public static final String PARAMS_DATABITS = "data bits"; // ï¿½ï¿½ï¿½ï¿½Î»
     public static final String PARAMS_STOPBITS = "stop bits"; // Í£Ö¹Î»
-    public static final String PARAMS_PARITY = "parity"; // ÆæÅ¼Ð£Ñé
-    public static final String PARAMS_RATE = "rate"; // ²¨ÌØÂÊ
-    private static byte[] readBuffer = new byte[1024]; // 4kµÄbuffer¿Õ¼ä,»º´æ´®¿Ú¶ÁÈëµÄÊý¾Ý
+    public static final String PARAMS_PARITY = "parity"; // ï¿½ï¿½Å¼Ð£ï¿½ï¿½
+    public static final String PARAMS_RATE = "rate"; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    private static byte[] readBuffer = new byte[1024]; // 4kï¿½ï¿½bufferï¿½Õ¼ï¿½,ï¿½ï¿½ï¿½æ´®ï¿½Ú¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     int delayRead = 100;
     boolean isOpen = false;
-    int numBytes; // bufferÖÐµÄÊµ¼ÊÊý¾Ý×Ö½ÚÊý
+    int numBytes; // bufferï¿½Ðµï¿½Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö½ï¿½ï¿½ï¿½
     InputStream inputStream;
     OutputStream outputStream;
     static SerialPort serialPort;
@@ -34,7 +34,7 @@ public class SerialReader_copy extends Observable implements Runnable, SerialPor
         serialParams = params;
 
         if (!isOpen) {
-            // ²ÎÊý³õÊ¼»¯
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½
             int timeout = Integer.parseInt(serialParams.get(PARAMS_TIMEOUT)
                     .toString());
             int rate = Integer.parseInt(serialParams.get(PARAMS_RATE)
@@ -49,7 +49,7 @@ public class SerialReader_copy extends Observable implements Runnable, SerialPor
                     .toString());
             String port = serialParams.get(PARAMS_PORT).toString();
             try {
-                // ´ò¿ª¶Ë¿Ú
+                // ï¿½ò¿ª¶Ë¿ï¿½
                 portId = CommPortIdentifier.getPortIdentifier(port);
                 serialPort = (SerialPort) portId.open("SerialReader", timeout);
                 inputStream = serialPort.getInputStream();
@@ -100,10 +100,10 @@ public class SerialReader_copy extends Observable implements Runnable, SerialPor
         }
         try {
             if (message != null && message.length != 0) {
-                //TODO ·¢ËÍÖ¸Áî
+                //TODO ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½
                 outputStream.write(message);
                 outputStream.flush();
-                //TODO Êý¾Ý»Ø×ªÊ±¼ä
+                //TODO ï¿½ï¿½ï¿½Ý»ï¿½×ªÊ±ï¿½ï¿½
                 Thread.sleep(1000 * 1);
             }
         } catch (IOException e) {
@@ -122,7 +122,7 @@ public class SerialReader_copy extends Observable implements Runnable, SerialPor
                 serialPort.close();
                 isOpen = false;
             } catch (IOException ex) {
-                //"¹Ø±Õ´®¿ÚÊ§°Ü";
+                //"ï¿½Ø±Õ´ï¿½ï¿½ï¿½Ê§ï¿½ï¿½";
             }
         }
     }
@@ -142,16 +142,10 @@ public class SerialReader_copy extends Observable implements Runnable, SerialPor
                 break;
             case SerialPortEvent.DATA_AVAILABLE: // 1
                 try {
-                    // ¶à´Î¶ÁÈ¡,½«ËùÓÐÊý¾Ý¶ÁÈë
+
                     while (inputStream.available() > 0) {
                         numBytes = inputStream.read(readBuffer);
                     }
-
-                    //´òÓ¡½ÓÊÕµ½µÄ×Ö½ÚÊý¾ÝµÄASCIIÂë
-                    /*for (int i = 0; i < numBytes; i++) {
-                         System.out.println("msg[" + numBytes + "]: [" +readBuffer[i] + "]:"+(char)readBuffer[i]);
-                    }*/
-//                    numBytes = inputStream.read( readBuffer );
                     changeMessage(readBuffer, numBytes);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -160,34 +154,34 @@ public class SerialReader_copy extends Observable implements Runnable, SerialPor
         }
     }
 
-    // Í¨¹ýobserver pattern½«ÊÕµ½µÄÊý¾Ý·¢ËÍ¸øobserver
-    // ½«bufferÖÐµÄ¿Õ×Ö½ÚÉ¾³ýºóÔÙ·¢ËÍ¸üÐÂÏûÏ¢,Í¨Öª¹Û²ìÕß
+    // Í¨ï¿½ï¿½observer patternï¿½ï¿½ï¿½Õµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý·ï¿½ï¿½Í¸ï¿½observer
+    // ï¿½ï¿½bufferï¿½ÐµÄ¿ï¿½ï¿½Ö½ï¿½É¾ï¿½ï¿½ï¿½ï¿½ï¿½Ù·ï¿½ï¿½Í¸ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢,Í¨Öªï¿½Û²ï¿½ï¿½ï¿½
     public void changeMessage(byte[] message, int length) {
         setChanged();
         byte[] temp = new byte[length];
         System.arraycopy(message, 0, temp, 0, length);
-        //TODO Í¨Öª²¢´«Öµ¸øObserver¡£
+        //TODO Í¨Öªï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½Observerï¿½ï¿½
         notifyObservers(temp);
     }
     public void openSerialPort(byte[] message) {
         HashMap<String, Comparable> params = new HashMap<String, Comparable>();
         //otherDAO odao=new otherDAO();
-        String port = "COM4";//TODO ÉèÖÃ¶Ë¿ÚÃû³Æ
-        String rate = "19200";//TODO ÉèÖÃ²¨ÌØÂÊ
+        String port = "COM4";//TODO ï¿½ï¿½ï¿½Ã¶Ë¿ï¿½ï¿½ï¿½ï¿½ï¿½
+        String rate = "19200";//TODO ï¿½ï¿½ï¿½Ã²ï¿½ï¿½ï¿½ï¿½ï¿½
         String dataBit = "" + SerialPort.DATABITS_8;
         String stopBit = "" + SerialPort.STOPBITS_1;
         String parity = "" + SerialPort.PARITY_NONE;
         int parityInt = SerialPort.PARITY_NONE;
-        params.put(SerialReader_copy.PARAMS_PORT, port); // ¶Ë¿ÚÃû³Æ
-        params.put(SerialReader_copy.PARAMS_RATE, rate); // ²¨ÌØÂÊ
-        params.put(SerialReader_copy.PARAMS_DATABITS, dataBit); // Êý¾ÝÎ»
+        params.put(SerialReader_copy.PARAMS_PORT, port); // ï¿½Ë¿ï¿½ï¿½ï¿½ï¿½ï¿½
+        params.put(SerialReader_copy.PARAMS_RATE, rate); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        params.put(SerialReader_copy.PARAMS_DATABITS, dataBit); // ï¿½ï¿½ï¿½ï¿½Î»
         params.put(SerialReader_copy.PARAMS_STOPBITS, stopBit); // Í£Ö¹Î»
-        params.put(SerialReader_copy.PARAMS_PARITY, parityInt); // ÎÞÆæÅ¼Ð£Ñé
-        params.put(SerialReader_copy.PARAMS_TIMEOUT, 100); // Éè±¸³¬Ê±Ê±¼ä 1Ãë
-        params.put(SerialReader_copy.PARAMS_DELAY, 100); // ¶Ë¿ÚÊý¾Ý×¼±¸Ê±¼ä 1Ãë
+        params.put(SerialReader_copy.PARAMS_PARITY, parityInt); // ï¿½ï¿½ï¿½ï¿½Å¼Ð£ï¿½ï¿½
+        params.put(SerialReader_copy.PARAMS_TIMEOUT, 100); // ï¿½è±¸ï¿½ï¿½Ê±Ê±ï¿½ï¿½ 1ï¿½ï¿½
+        params.put(SerialReader_copy.PARAMS_DELAY, 100); // ï¿½Ë¿ï¿½ï¿½ï¿½ï¿½ï¿½×¼ï¿½ï¿½Ê±ï¿½ï¿½ 1ï¿½ï¿½
         try {
-            open(params);//´ò¿ª´®¿Ú
-            //TODO ÐÂ½¨Observer¶ÔÏó
+            open(params);//ï¿½ò¿ª´ï¿½ï¿½ï¿½
+            //TODO ï¿½Â½ï¿½Observerï¿½ï¿½ï¿½ï¿½
             SerialObserver cf = new SerialObserver();
             addObserver(cf);
             if (message != null && message.length != 0) {
@@ -217,7 +211,7 @@ public class SerialReader_copy extends Observable implements Runnable, SerialPor
     }
 
 
-    public HashSet<CommPortIdentifier> getAvailableSerialPorts()//±¾À´static
+    public HashSet<CommPortIdentifier> getAvailableSerialPorts()//ï¿½ï¿½ï¿½ï¿½static
     {
         HashSet<CommPortIdentifier> h = new HashSet<CommPortIdentifier>();
         Enumeration thePorts = CommPortIdentifier.getPortIdentifiers();

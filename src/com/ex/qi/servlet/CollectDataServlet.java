@@ -27,21 +27,16 @@ import java.util.function.Consumer;
 public class CollectDataServlet extends HttpServlet implements Runnable {
     public static final int AC_TIMEOUT = 30;
     public static final int DC_TIMEOUT = 1;
-    boolean isOpen = true;
-    private static String COLLECT_DATA = "1";
-    private static String UNCOLLECT_DATA = "2";
-
+    ScheduledExecutorService service = null;
     @Override
     public void init() throws ServletException {
         super.init();
-        ScheduledExecutorService service = Executors
+        service = Executors
                 .newSingleThreadScheduledExecutor();
-        if (isOpen) {
                 /*执行定时任务，第二个参数是首次执行任务的延时，第三个参数是执行定时任务的
                  间隔时间，第四个参数是时间的类型
                  */
-            service.scheduleAtFixedRate(this, 1, 10, TimeUnit.SECONDS);
-        }
+        service.scheduleAtFixedRate(this, 1, 10, TimeUnit.SECONDS);
     }
 
     PrintWriter out = null;
@@ -77,6 +72,10 @@ public class CollectDataServlet extends HttpServlet implements Runnable {
     @Override
     public void destroy() {
         super.destroy();
+        if (!service.isShutdown()){
+            service.shutdown();
+        }
+        service = null;
         out = null;
     }
 
@@ -112,11 +111,13 @@ public class CollectDataServlet extends HttpServlet implements Runnable {
                     }
                 } else if (id.startsWith("DC")) {//判断为直流电间
                     portUtils.sendMessage(cmd, DC_TIMEOUT);
-                    if (flag) {
+                    /*if (flag) {
                         float[] degrees = portUtils.parseDCDegrees();//把数据解析成电度数值
-                        addData2Database(id, degrees);//添加数据到RealKwh
+                       if (null != degrees && 0 != degrees.length){
+                           addData2Database(id, degrees);
+                       }
 //                        System.out.println("-***************************************************-");
-                    }
+                    }*/
                 }
                 portUtils.close();//每次采集完毕，关闭串口
             }
@@ -137,6 +138,7 @@ public class CollectDataServlet extends HttpServlet implements Runnable {
         for (int j = 0; j < degrees.length; j++) {
             route = j + 1;
             curDegree = degrees[j];
+
             /**
              * 更新ReakKwh中的数据
              */
@@ -151,7 +153,7 @@ public class CollectDataServlet extends HttpServlet implements Runnable {
              * 更新MonthKwh中的数据
              */
             updatePresentKwh(PresentKwhDao.KWH_MONTH, id, curDegree, route);
-            /**
+             /**
              * 更新MonthKwh中的数据
              */
             updatePresentKwh(PresentKwhDao.KWH_YEAR, id, curDegree, route);
@@ -294,7 +296,7 @@ public class CollectDataServlet extends HttpServlet implements Runnable {
     private void printPue(PrintWriter out) {
         PUEUtils utils = new PUEUtils();
         float pue = utils.calculatePue(PUEUtils.DAY_PUE);
-        System.out.println("   当日PUE:" + pue);
+        //System.out.println("   当日PUE:" + pue);
         out.print("<tr>" +
                 "<td align=\"right\">当日</td>" +
                 "<td>" + pue + "</td>" +
@@ -306,12 +308,12 @@ public class CollectDataServlet extends HttpServlet implements Runnable {
                 "</tr>");
         pue = utils.calculatePue(PUEUtils.YEAR_PUE);
         out.append("<tr>" +
-                "<td align=\"right\">当月</td>" +
+                "<td align=\"right\">当年</td>" +
                 "<td>" + pue + "</td>" +
                 "</tr>");
         pue = utils.calculatePue(PUEUtils.ACCUMDAY_PUE);
         out.append("<tr>" +
-                "<td align=\"right\">当月</td>" +
+                "<td align=\"right\">24小时累计</td>" +
                 "<td>" + pue + "</td>" +
                 "</tr>");
         pue = utils.calculatePue(PUEUtils.ACCUMMONTH_PUE);
