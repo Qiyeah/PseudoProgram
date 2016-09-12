@@ -11,6 +11,7 @@
     <file url="file://$PROJECT_DIR$/src/com/ex/qi/servlet/AddDeviceServlet.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/com/ex/qi/servlet/CollectDataServlet.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/com/ex/qi/servlet/DefaultServlet.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/com/ex/qi/utils/DeviceUtils.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/com/ex/qi/utils/PUEUtils.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/com/ex/qi/utils/SerialPortUtils.java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/com/ex/qi/utils/SerialReader.java" charset="UTF-8" />

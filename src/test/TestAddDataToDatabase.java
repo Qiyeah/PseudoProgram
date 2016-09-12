@@ -10,6 +10,7 @@ import com.ex.qi.utils.DateUtils;
 import com.ex.qi.utils.DeviceUtils;
 import com.ex.qi.utils.IDUtils;
 import com.ex.qi.utils.SerialPortUtils;
+import com.sun.media.sound.SoftTuning;
 
 import java.util.List;
 import java.util.Map;
@@ -19,18 +20,35 @@ import java.util.Map;
  */
 @SuppressWarnings("all")
 public class TestAddDataToDatabase {
+    public static  String CRLF = "\r\n";
+
+    public static  String SPLIT1 = "------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------";
+    public static  String SPLIT2 = "------------------------------------------------------------------------------------------------------------------";
+    public static  String SPLIT3 = "****************************************************************************************************************************************************************************************************************************";
+
+    public static StringBuilder sb = SerialPortUtils.sb;
     public static final int AC_TIMEOUT = 30;
     public static final int DC_TIMEOUT = 1;
     public static SerialPortUtils portUtils = new SerialPortUtils();//操作串口的工具类
     public static DeviceUtils deviceUtils = new DeviceUtils();//操作设备的工具类
     public static List<Device> devices = deviceUtils.loadDevice();//加载所有配置好的设备
     public static Map<String, Comparable> params = null;//用来设置设备的通信参数
+    public static SerialPortUtils mSerialPortUtils = new SerialPortUtils();
 
     public static void main(String[] args) {
-
         for (int i = 1; i < 5000 * 100; i++) {
+         /*   System.out.println();
             System.out.println("采集程序第 【 " + i + " 】次运行");
+            System.out.println(SPLIT1);*/
+//            System.out.println(SPLIT3);
+            sb.append(CRLF);
+            sb.append("采集程序第 【 " + i + " 】次运行  ");
+            sb.append(new SerialPortUtils().date2Str());
+            sb.append(CRLF);
+            sb.append(SPLIT1);
+            sb.append(CRLF);
             addDataToDatabase();
+            mSerialPortUtils.writeLog(sb);
         }
 
     }
@@ -55,14 +73,15 @@ public class TestAddDataToDatabase {
                  * 1、依据设备ID判断设备类型
                  * 2、接收设备数据
                  */
-                if (id.startsWith("AC")) {//判断为多路表
+               /* if (id.startsWith("AC")) {//判断为多路表
                     portUtils.sendMessage(cmd, AC_TIMEOUT);
                     if (flag) {
                         float[] degrees = portUtils.parseACDegrees();//把数据解析成电度数值
                         addData2Database(id, degrees);
 //                        System.out.println("\n-***************************************************-");
                     }
-                } else if (id.startsWith("DC")) {//判断为直流电间
+                } else */
+                if (id.startsWith("DC")) {//判断为直流电间
                     portUtils.sendMessage(cmd, DC_TIMEOUT);
                /*     for (byte b : cmd) {
                         System.out.print(b +" ");
@@ -70,7 +89,7 @@ public class TestAddDataToDatabase {
                     if (flag) {
                         float[] degrees = portUtils.parseDCDegrees();//把数据解析成电度数值
                         if (null != degrees && 0 != degrees.length) {
-                            addData2Database(id, degrees);
+                            //addData2Database(id, degrees);
                         }
 //                        System.out.println("\n-***************************************************-");
                     }
@@ -79,7 +98,14 @@ public class TestAddDataToDatabase {
             }
         }
         long end = System.currentTimeMillis();
-        System.out.println("耗时：" + (end - start));
+       /* System.out.println("耗时：" + (end - start));
+        System.out.println(SPLIT3);*/
+        sb.append(SPLIT3);
+        sb.append(CRLF);
+        sb.append("耗时：" + (end - start));
+        sb.append(CRLF);
+        sb.append(CRLF);
+
     }
 
     /**
@@ -220,6 +246,9 @@ public class TestAddDataToDatabase {
             dao.addDataAtPoint(table, new PresentKwh(id, fk, route, latestDegree, curPoint, 1));
         }
     }
+
+
+
 }
 
 

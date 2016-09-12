@@ -1,6 +1,8 @@
 package test;
 
 import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by sunline on 2016/9/10.
@@ -21,7 +23,7 @@ public class TestPrintLog {
         FileOutputStream fos = null;
         BufferedWriter bufWriter = null;
         try {
-            file = new File("F:/java_space/PseudoProgram/out/artifacts/PseudoProgram_war_exploded/log.txt");
+            file = new File("F:/java_space/PseudoProgram/out/artifacts/PseudoProgram_war_exploded/log1.txt");
             fis = new FileInputStream(file);
             reader = new InputStreamReader(fis);
             bufReader = new BufferedReader(reader);
@@ -33,9 +35,10 @@ public class TestPrintLog {
                 //bufWriter.write(line + "\r\n");
                 System.out.println(line);
             }
-
-            bufWriter.write("-->>出错字节");
-
+            StringBuilder sb = new StringBuilder();
+            sb.append(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS").format(new Date()));
+            bufWriter.write(sb.toString());
+            bufWriter.write(CRLF);
             bufWriter.write("-----------------------------------------------");
             bufWriter.write(CRLF);
             bufWriter.write(error + CRLF);

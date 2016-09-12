@@ -23,7 +23,7 @@ public class DeviceUtils {
     byte[] data = new byte[0];
 
     /**
-     * ²éÑ¯Êı¾İ¿â£¬¼ÓÔØËùÓĞÒÑÖªµÄÉè±¸ĞÅÏ¢
+     * æŸ¥è¯¢æ•°æ®åº“ï¼ŒåŠ è½½æ‰€æœ‰å·²çŸ¥çš„è®¾å¤‡ä¿¡æ¯
      * @return
      */
     public List<Device> loadDevice() {
@@ -52,24 +52,24 @@ public class DeviceUtils {
     }
 
     /**
-     * Í¨¹ıÉè±¸ĞÅÏ¢£¬Éú³É´®¿ÚÍ¨ĞÅ²ÎÊı
+     * é€šè¿‡è®¾å¤‡ä¿¡æ¯ï¼Œç”Ÿæˆä¸²å£é€šä¿¡å‚æ•°
      * @param device
      * @return
      */
     public Map<String, Comparable> parseToParams(Device device) {
         HashMap<String, Comparable> params = new HashMap<String, Comparable>();
-        params.put(SerialReader.PARAMS_PORT, device.getPort()); // ¶Ë¿ÚÃû³Æ
-        params.put(SerialReader.PARAMS_RATE, Integer.valueOf(device.getRate())); // ²¨ÌØÂÊ
-        params.put(SerialReader.PARAMS_DATABITS, Integer.valueOf(device.getDataBits())); // Êı¾İÎ»
-        params.put(SerialReader.PARAMS_STOPBITS, Integer.valueOf(device.getStopBits())); // Í£Ö¹Î»
-        params.put(SerialReader.PARAMS_PARITY, Integer.valueOf(device.getParity())); // ÎŞÆæÅ¼Ğ£Ñé
-        params.put(SerialReader.PARAMS_TIMEOUT, Integer.valueOf(device.getTimeOut())); // Éè±¸³¬Ê±Ê±¼ä 1Ãë
-        params.put(SerialReader.PARAMS_DELAY, Integer.valueOf(device.getDelay())); // ¶Ë¿ÚÊı¾İ×¼±¸Ê±¼ä 1Ãë
+        params.put(SerialReader.PARAMS_PORT, device.getPort()); // ç«¯å£åç§°
+        params.put(SerialReader.PARAMS_RATE, Integer.valueOf(device.getRate())); // æ³¢ç‰¹ç‡
+        params.put(SerialReader.PARAMS_DATABITS, Integer.valueOf(device.getDataBits())); // æ•°æ®ä½
+        params.put(SerialReader.PARAMS_STOPBITS, Integer.valueOf(device.getStopBits())); // åœæ­¢ä½
+        params.put(SerialReader.PARAMS_PARITY, Integer.valueOf(device.getParity())); // æ— å¥‡å¶æ ¡éªŒ
+        params.put(SerialReader.PARAMS_TIMEOUT, Integer.valueOf(device.getTimeOut())); // è®¾å¤‡è¶…æ—¶æ—¶é—´ 1ç§’
+        params.put(SerialReader.PARAMS_DELAY, Integer.valueOf(device.getDelay())); // ç«¯å£æ•°æ®å‡†å¤‡æ—¶é—´ 1ç§’
         return params;
     }
 
     /**
-     * Í¨¹ıÉè±¸ĞÅÏ¢£¬Éú³ÉÍ¨ĞÅÃüÁî
+     * é€šè¿‡è®¾å¤‡ä¿¡æ¯ï¼Œç”Ÿæˆé€šä¿¡å‘½ä»¤
      * @param device
      * @return
      */

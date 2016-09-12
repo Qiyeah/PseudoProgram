@@ -3,12 +3,14 @@ package com.ex.qi.utils;
 import com.ex.qi.dao.daoImpl.DeviceDaoImpl;
 import com.ex.qi.entity.Device;
 import gnu.io.SerialPort;
+import test.TestAddDataToDatabase;
 import test.TestSerialPort;
 
 import javax.swing.*;
 import java.io.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -17,20 +19,21 @@ import java.util.logging.Level;
  */
 public class SerialPortUtils extends SerialReader {
     int[] data = new int[0];
-    private static final String CRLF = "\r\n";
+    public static final String CRLF = "\r\n";
+
+    public static final String SPLIT1 = "------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------";
+    public static final String SPLIT2 = "------------------------------------------------------------------------------------------------------------------";
+    public static final String SPLIT3 = "****************************************************************************************************************************************************************************************************************************";
+
     @Override
     public void transformData(int[] data) {
         if (null != data && 0 < data.length) {
-            /*System.out.println();
-            System.out.println();
-            System.out.println("--****************原始数据*********************--");
-            for (int i = 0; i < data.length; i++) {
-                System.out.print(data[i] + " ");
-            }
-            System.out.println("\n--*********************************************--");
-            System.out.println();
-            System.out.println();*/
             this.data = data;
+            sb.append("解析电度接收到的数据:");
+            for (int i : data) {
+                sb.append(i + " ");
+            }
+           sb.append(TestAddDataToDatabase.CRLF);
         } else {
             close();
         }
@@ -59,7 +62,11 @@ public class SerialPortUtils extends SerialReader {
                 try {
                     result[i] = Float.intBitsToFloat(Integer.parseInt((str4 + str3 + str2 + str1), 16));
                 } catch (NumberFormatException e) {
-                    printErrorLog(str4 + str3 + str2 + str1,str4 + str3 + str2 + str1);
+                    sb.append(str4);
+                    sb.append(str3);
+                    sb.append(str2);
+                    sb.append(str1);
+                    sb.append(CRLF);
                     //e.printStackTrace();
                 }
             }
@@ -74,12 +81,16 @@ public class SerialPortUtils extends SerialReader {
     public float[] parseDCDegrees() {
         dCount += 1;
         String temp = "";
-        String error = " ";
+        String error = "";
         float[] degrees = new float[(this.data.length - 5) / 4];
         String str ="";
         for (int i : data) {
             str+=i+" ";
         }
+//        System.out.print("电度值：");
+
+        String CRLF = TestAddDataToDatabase.CRLF;
+        sb.append("电度值：");
         if (null != data && 0 < data.length) {
             for (int i = 3; i < this.data.length - 2; i++) {
                 temp += Integer.toHexString(this.data[i]);
@@ -87,17 +98,18 @@ public class SerialPortUtils extends SerialReader {
                 if ((i - 2) % 4 == 0) {
                     try {
                         degrees[(i - 3) / 4] = Integer.parseInt(temp,16) / 10.0f;
-//                        System.out.println( degrees[(i - 3) / 4]);
+                        sb.append(degrees[(i - 3) / 4] + "° ");
                     } catch (NumberFormatException e) {
 //                        e.printStackTrace();
-                        System.out.println("=错误数据：=>>"+error);
-                        printErrorLog(error,str);
+                        sb.append("=错误数据：=>>"+error);
+                        sb.append(CRLF);
                         return null;
                     }
                     temp = "";
                     error = null;
                 }
             }
+            sb.append(CRLF);
         }
         return degrees;
     }
@@ -112,63 +124,90 @@ public class SerialPortUtils extends SerialReader {
         return "";
     }
 
-    private static void printErrorLog(String error,String str) {
-        File file = null;
-        OutputStreamWriter writer = null;
-        InputStreamReader reader = null;
-        BufferedReader bufReader = null;
-        FileInputStream fis = null;
-        FileOutputStream fos = null;
-        BufferedWriter bufWriter = null;
+    public int[] getData() {
+        return data;
+    }
+
+
+    public static File file = null;
+    public static OutputStreamWriter writer = null;
+    public static InputStreamReader reader = null;
+    public static BufferedReader bufReader = null;
+    public static FileInputStream fis = null;
+    public static FileOutputStream fos = null;
+    public static BufferedWriter bufWriter = null;
+    public static StringBuilder sb = new StringBuilder();
+    public static SimpleDateFormat sdf = null;
+
+    /**
+     * @param str
+     */
+    public void writeLog(StringBuilder str) {
+        openIO();
         try {
-            file = new File("F:/java_space/PseudoProgram/out/artifacts/PseudoProgram_war_exploded/log.txt");
-            fis = new FileInputStream(file);
-            reader = new InputStreamReader(fis);
-            bufReader = new BufferedReader(reader);
-            fos = new FileOutputStream(file,true);
-            writer = new OutputStreamWriter(fos);
-            bufWriter = new BufferedWriter(writer);
-            String line = null;
+         /*   String line = null;
             while (null != (line = bufReader.readLine())) {
                 //bufWriter.write(line + "\r\n");
                 System.out.println(line);
-            }
-            bufWriter.write("-->>原数据");
-            bufWriter.write("-----------------------------------------------");
-            bufWriter.write(CRLF);
-            bufWriter.write(str);
-            bufWriter.write(CRLF);
-            bufWriter.write("-->>出错字节");
-            bufWriter.write(CRLF);
-            bufWriter.write("-----------------------------------------------");
-            bufWriter.write(CRLF);
-            bufWriter.write(error + CRLF);
-            bufWriter.write("-----------------------------------------------");
-            bufWriter.write(CRLF);
-
+            }*/
+            bufWriter.append(str);
+            bufWriter.flush();
         } catch (FileNotFoundException e1) {
             e1.printStackTrace();
         } catch (IOException e1) {
             e1.printStackTrace();
         } finally {
-            try {
-                file = null;
-                bufWriter.flush();
-                bufWriter.close();
-                fis.close();
-                reader.close();
-                bufReader.close();
-                fos.close();
-                writer.close();
-
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
+            closeIO();
         }
     }
 
-    public int[] getData() {
-        return data;
+    public String date2Str() {
+        Date date = new Date();
+        sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
+        return sdf.format(date);
+    }
+
+    public static void openIO() {
+        try {
+            file = new File("F:/java_space/PseudoProgram/out/artifacts/PseudoProgram_war_exploded/log.txt");
+            fis = new FileInputStream(file);
+            reader = new InputStreamReader(fis);
+            bufReader = new BufferedReader(reader);
+
+            fos = new FileOutputStream(file);
+            writer = new OutputStreamWriter(fos);
+            bufWriter = new BufferedWriter(writer);
+        } catch (Exception e) {
+            //e.printStackTrace();
+        }
+    }
+
+    public static void closeIO() {
+        try {
+            if (null != file) {
+                file = null;
+            }
+            if (null != bufWriter) {
+                bufWriter.close();
+            }
+            if (null != fos) {
+                fos.close();
+            }
+            if (null != writer) {
+                writer.close();
+            }
+            if (null != fis) {
+                fis.close();
+            }
+            if (null != reader) {
+                reader.close();
+            }
+            if (null != bufReader) {
+                bufReader.close();
+            }
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
     }
 
 }

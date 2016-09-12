@@ -8,7 +8,7 @@ import java.sql.*;
  */
 public class DBUtils {
     String driver = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-    String url = "jdbc:sqlserver://localhost:1433;DatabaseName=SUNLINE";
+    String url = "jdbc:sqlserver://localhost:1433;databaseName=sunline";
     String user = "sa";
     String pass = "tiger";
 
