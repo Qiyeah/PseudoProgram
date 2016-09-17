@@ -1,6 +1,6 @@
-<%@ page import="com.ex.qi.dao.daoImpl.DeviceDaoImpl" %>
+<%@ page import="com.ex.qi.dao.daoImpl.EquipmentDaoImpl" %>
 <%@ page import="java.sql.ResultSet" %>
-<%@ page import="com.ex.qi.entity.Device" %>
+<%@ page import="com.ex.qi.entity.Equipment" %>
 <%--
   Created by IntelliJ IDEA.
   User: sunline
@@ -11,9 +11,9 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
     String id = request.getParameter("id");
-    DeviceDaoImpl dao = new DeviceDaoImpl();
+    EquipmentDaoImpl dao = new EquipmentDaoImpl();
     ResultSet set = dao.queryDevice(id);
-    Device device = null;
+    Equipment equipment = null;
    while (set.next()) {
         String name = set.getString("name");
         String port = set.getString("port");
@@ -21,7 +21,7 @@
         int addr = set.getInt("addr");
         int state = set.getInt("state");
         int delay = set.getInt("delay");
-        device = new Device(id, name, port, rate, addr, state, delay);
+        equipment = new Equipment(id, name, port, rate, addr, state, delay);
     }
 %>
 设备ID:<%=request.getParameter("id")%><br>

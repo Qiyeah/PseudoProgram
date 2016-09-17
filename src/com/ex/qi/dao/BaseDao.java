@@ -8,19 +8,10 @@ import java.sql.SQLException;
  */
 public interface BaseDao {
 
-    /**
-     * ??????е???
-     * @param sql
-     * @param obj
-     * @return
-     */
+
     ResultSet query(String sql, Object... obj) throws SQLException;
 
-    /**
-     * ???±???????????????
-     * @param sql
-     * @param obj
-     * @return
-     */
     boolean update(String sql, Object... obj) throws SQLException;
+
+    boolean execute(String sql);
 }

@@ -13,12 +13,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.Date;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 
 /**
  * Created by sunline on 2016/8/24.
@@ -88,14 +86,14 @@ public class CollectDataServlet extends HttpServlet implements Runnable {
         Map<String, Comparable> params = null;//用来设置设备的通信参数
         SerialPortUtils portUtils = new SerialPortUtils();//操作串口的工具类
         DeviceUtils deviceUtils = new DeviceUtils();//操作设备的工具类
-        List<Device> devices = deviceUtils.loadDevice();//加载所有配置好的设备
-        int deviceSize = devices.size();//设备数量
-        if (null != devices && 0 < deviceSize) {//判断是否已经配置设备
+        List<Equipment> equipments = deviceUtils.loadDevice();//加载所有配置好的设备
+        int deviceSize = equipments.size();//设备数量
+        if (null != equipments && 0 < deviceSize) {//判断是否已经配置设备
             for (int i = 0; i < deviceSize; i++) {//遍历所有设备
-                Device device = devices.get(i);//得到设备实体
-                String id = device.getId();//当前操作的设备ID
-                byte[] cmd = deviceUtils.generateCommandsViaDevice(device);
-                params = deviceUtils.parseToParams(device);//解析设备的通信参数、
+                Equipment equipment = equipments.get(i);//得到设备实体
+                String id = equipment.getId();//当前操作的设备ID
+                byte[] cmd = deviceUtils.generateCommandsViaDevice(equipment);
+                params = deviceUtils.parseToParams(equipment);//解析设备的通信参数、
                 portUtils.open(params);//依据生成的通信参数打开串口，通信开始
                 boolean flag = portUtils.getPortState();
                 /**

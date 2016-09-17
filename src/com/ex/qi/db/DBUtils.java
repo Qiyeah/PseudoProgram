@@ -11,12 +11,15 @@ public class DBUtils {
     String url = "jdbc:sqlserver://localhost:1433;databaseName=sunline";
     String user = "sa";
     String pass = "tiger";
-
+    String orclUrl = "jdbc:oracle:thin:@//localhost:1521/orcl";
+    String orclUser = "sunlines";
+    String orclPass = "tiger";
+    private String Driver = "oracle.jdbc.driver.OracleDriver";
     public Connection getConn(){
         Connection conn = null;
         try {
-            Class.forName(driver);
-            conn = DriverManager.getConnection(url, user, pass);
+            Class.forName(Driver);
+            conn = DriverManager.getConnection(orclUrl, orclUser, orclPass);
             if (null != conn){
                 //System.out.println("数据库连接成功");
             }

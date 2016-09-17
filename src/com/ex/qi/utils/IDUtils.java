@@ -1,6 +1,7 @@
 package com.ex.qi.utils;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Random;
 
 /**
  * Created by sunline on 2016/6/2.
@@ -8,7 +9,7 @@ import java.util.Date;
 public class IDUtils {
     public static final int AC = 0x01;
     public static final int DC = 0x02;
-    public static final int DEVICEINFO = 0x03;
+    public static final int INFO = 0x03;
     public static final int REAL_KWH = 0x04;
     public static final int KWH_DAY = 0x05;
     public static final int KWH_MONTH = 0x06;
@@ -37,7 +38,7 @@ public class IDUtils {
             return "AC"+ randomStr30();
         }else if (DC == type){
             return "DC"+ randomStr30();
-        }else if (DEVICEINFO == type){
+        }else if (INFO == type){
             return "INF"+ randomStr29();
         }else if (REAL_KWH == type){
             return "REA"+ randomStr29();
@@ -55,5 +56,12 @@ public class IDUtils {
             return "ACY"+ randomStr29();
         }
         return null;
+    }
+    public static int generateId(){
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 5; i++) {
+            sb.append(Integer.toString(new Random().nextInt(10)));
+        }
+        return Integer.parseInt(sb.toString());
     }
 }

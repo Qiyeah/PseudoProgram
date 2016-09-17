@@ -12,40 +12,53 @@ import java.sql.SQLException;
  */
 public class BaseDaoImpl implements BaseDao {
     private Connection conn;
-    private PreparedStatement pswitchment;
+    private PreparedStatement preStatement;
     private ResultSet resultSet;
     private DBUtils util = new DBUtils();
 
     @Override
-    public ResultSet query(String sql, Object... obj){
+    public ResultSet query(String sql, Object... obj) {
         conn = util.getConn();
         try {
-            pswitchment = conn.prepareStatement(sql);
+            preStatement = conn.prepareStatement(sql);
             if (null != obj) {
                 for (int i = 0; i < obj.length; i++) {
-                    pswitchment.setObject((i + 1), obj[i]);
+                    preStatement.setObject((i + 1), obj[i]);
                 }
-                return pswitchment.executeQuery();
+                return preStatement.executeQuery();
             }
         } catch (SQLException e) {
 
         }
-        util.closeConn(conn, pswitchment, resultSet);
+        util.closeConn(conn, preStatement, resultSet);
         return null;
     }
 
     @Override
     public boolean update(String sql, Object... obj) throws SQLException {
         conn = util.getConn();
-        pswitchment = conn.prepareStatement(sql);
+        preStatement = conn.prepareStatement(sql);
         for (int i = 0; i < obj.length; i++) {
-            pswitchment.setObject((i + 1), obj[i]);
+            preStatement.setObject((i + 1), obj[i]);
         }
-        int temp = pswitchment.executeUpdate();
+        int temp = preStatement.executeUpdate();
         if (0 < temp) {
             return true;
         }
-        util.closeConn(conn, pswitchment);
+        util.closeConn(conn, preStatement);
+        return false;
+    }
+
+    @Override
+    public boolean execute(String sql) {
+        try {
+            conn = util.getConn();
+            return preStatement.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            util.closeConn(conn, preStatement);
+        }
         return false;
     }
 
@@ -54,9 +67,9 @@ public class BaseDaoImpl implements BaseDao {
         String sql = "SELECT COUNT(*) as result FROM sysobjects WHERE id = OBJECT_ID('" + table + "')";
         try {
             ResultSet set = query(sql);
-            if (set.next()){
+            if (set.next()) {
                 int result = set.getInt("result");
-                if (0<result){
+                if (0 < result) {
                     return true;
                 }
             }
@@ -64,5 +77,14 @@ public class BaseDaoImpl implements BaseDao {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public boolean isExists() {
+        String sql = "DECLARE num number;" +
+                "BEGIN " +
+                "SELECT \"COUNT\"(1) into num FROM user_tables where table_name='EQUIPMENT';\n" +
+                "end;";
+        return false;
+
     }
 }

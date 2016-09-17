@@ -17,7 +17,7 @@ public class TableUtils extends BaseDaoImpl {
                 "dt DATETIME  NULL DEFAULT getdate()," +
                 "PRIMARY KEY (_id) " +
                 ");" +
-                "ALTER TABLE RealKwh ADD CONSTRAINT real_device_id FOREIGN KEY (fk) REFERENCES Device (_id);";
+                "ALTER TABLE RealKwh ADD CONSTRAINT real_device_id FOREIGN KEY (fk) REFERENCES Equipment (id);";
         try {
             return update(sql);
         } catch (SQLException e) {
@@ -37,7 +37,7 @@ public class TableUtils extends BaseDaoImpl {
                 "dt DATE NULL DEFAULT getdate()," +
                 "PRIMARY KEY (_id) " +
                 ");" +
-                "ALTER TABLE YearKwh ADD CONSTRAINT year_device_id FOREIGN KEY (fk) REFERENCES Device (_id);";
+                "ALTER TABLE YearKwh ADD CONSTRAINT year_device_id FOREIGN KEY (fk) REFERENCES Equipment (id);";
         try {
             return update(sql);
         } catch (SQLException e) {
@@ -57,7 +57,7 @@ public class TableUtils extends BaseDaoImpl {
                 "dt DATETIME  NULL DEFAULT getdate()," +
                 "PRIMARY KEY (_id) " +
                 ");" +
-                "ALTER TABLE DayKwh ADD CONSTRAINT day_device_id FOREIGN KEY (fk) REFERENCES Device (_id);";
+                "ALTER TABLE DayKwh ADD CONSTRAINT day_device_id FOREIGN KEY (fk) REFERENCES Equipment (id);";
         try {
             return update(sql);
         } catch (SQLException e) {
@@ -77,7 +77,7 @@ public class TableUtils extends BaseDaoImpl {
                 "dt DATE  NULL DEFAULT getdate()," +
                 "PRIMARY KEY (_id) " +
                 ");" +
-                "ALTER TABLE MonthKwh ADD CONSTRAINT month_device_id FOREIGN KEY (fk) REFERENCES Device (_id);";
+                "ALTER TABLE MonthKwh ADD CONSTRAINT month_device_id FOREIGN KEY (fk) REFERENCES Equipment (id);";
         try {
             return update(sql);
         } catch (SQLException e) {
@@ -87,21 +87,21 @@ public class TableUtils extends BaseDaoImpl {
     }
 
     public boolean newDeviceTable() {
-        String sql = "CREATE TABLE Device (" +
-                "_id CHAR(32) NOT NULL," +
-                "name CHAR(32) NOT NULL," +
-                "port CHAR(10) NOT NULL," +
-                "rate CHAR(6) NOT NULL," +
-                "addr CHAR(3) NOT NULL," +
-                "timeout CHAR(6) NOT NULL DEFAULT '200'," +
-                "data CHAR(2) NOT NULL DEFAULT '8'," +
-                "stop CHAR(2) NOT NULL DEFAULT '1'," +
-                "parity CHAR(2) NOT NULL DEFAULT '0'," +
-                "switch CHAR(1) NOT NULL DEFAULT '1'," +
-                "delayed CHAR(2) NOT NULL DEFAULT '0'," +
-                "dt DATETIME NOT NULL DEFAULT getdate()," +
-                "PRIMARY KEY (_id) " +
-                ");";
+        String sql = "CREATE TABLE Equipment (" +
+                "id varchar(32) NOT NULL," +
+                "name varchar(32) NULL," +
+                "port varchar(10) NULL," +
+                "rate varchar(6) NULL," +
+                "addr varchar(3) NULL," +
+                "timeout varchar(4) DEFAULT '200'," +
+                "data varchar(2) DEFAULT '8'," +
+                "stop varchar(2) DEFAULT '1'," +
+                "parity varchar(2) DEFAULT '0'," +
+                "switch varchar(1) DEFAULT '1'," +
+                "delayed varchar(1) DEFAULT '1'," +
+                "dt DATE DEFAULT sysdate," +
+                "primary key(id)" +
+                ")";
         try {
             return update(sql);
         } catch (SQLException e) {
@@ -111,18 +111,18 @@ public class TableUtils extends BaseDaoImpl {
     }
 
     public boolean newDeviceInfoTable() {
-        String sql = "CREATE TABLE DeviceInfo (" +
-                "_id CHAR(32) NOT NULL," +
-                "route SMALLINT NOT NULL," +
-                "name CHAR(32) NOT NULL," +
-                "attr SMALLINT NOT NULL," +
-                "fk CHAR(32) NOT NULL," +
-                "per SMALLINT NOT NULL DEFAULT 100," +
-                "symbol SMALLINT NOT NULL DEFAULT 1," +
-                "dt DATETIME NOT NULL DEFAULT getdate()," +
-                "PRIMARY KEY (_id) " +
+        String sql = "CREATE TABLE EquipmentInfo (" +
+                "id varchar(32) NOT NULL," +
+                "route NUMBER(2,0)," +
+                "name varchar(32) ," +
+                "attr NUMBER(2,0)," +
+                "fk varchar(32)," +
+                "per NUMBER(3,0) DEFAULT 100," +
+                "symbol NUMBER(1,0) DEFAULT 1," +
+                "dt date DEFAULT sysdate," +
+                "PRIMARY KEY (id)" +
                 ");" +
-                "ALTER TABLE DeviceInfo ADD CONSTRAINT info_device_id FOREIGN KEY (fk) REFERENCES Device (_id);";
+                "ALTER TABLE DeviceInfo ADD CONSTRAINT device_config_id FOREIGN KEY (fk) REFERENCES Equipment (id);";
         try {
             return update(sql);
         } catch (SQLException e) {
@@ -133,7 +133,7 @@ public class TableUtils extends BaseDaoImpl {
 
     public boolean newAccumDayKwhTable() {
         String sql = "CREATE TABLE AccumDayKwh (" +
-                "_id CHAR(32) NOT NULL," +
+                "id CHAR(32) NOT NULL," +
                 "fk CHAR(32) NULL," +
                 "route DECIMAL(3) NULL," +
                 "degree  REAL  NULL," +
@@ -142,7 +142,7 @@ public class TableUtils extends BaseDaoImpl {
                 "dt DATETIME  NULL DEFAULT getdate()," +
                 "PRIMARY KEY (_id) " +
                 ");" +
-                "ALTER TABLE AccumDayKwh ADD CONSTRAINT accumday_device_id FOREIGN KEY (fk) REFERENCES Device (_id);";
+                "ALTER TABLE AccumDayKwh ADD CONSTRAINT accumday_device_id FOREIGN KEY (fk) REFERENCES Equipment (id)";
         try {
             return update(sql);
         } catch (SQLException e) {
@@ -162,7 +162,7 @@ public class TableUtils extends BaseDaoImpl {
                 "dt DATE  NULL DEFAULT getdate()," +
                 "PRIMARY KEY (_id) " +
                 ");" +
-                "ALTER TABLE AccumMonthKwh ADD CONSTRAINT acmonth_device_id FOREIGN KEY (fk) REFERENCES Device (_id);";
+                "ALTER TABLE AccumMonthKwh ADD CONSTRAINT acmonth_device_id FOREIGN KEY (fk) REFERENCES Equipment (id);";
         try {
             return update(sql);
         } catch (SQLException e) {
@@ -182,12 +182,55 @@ public class TableUtils extends BaseDaoImpl {
                 "dt DATE NULL DEFAULT getdate()," +
                 "PRIMARY KEY (_id) " +
                 ");" +
-                "ALTER TABLE AccumYearKwh ADD CONSTRAINT accumyear_device_id FOREIGN KEY (fk) REFERENCES Device (_id);";
+                "ALTER TABLE AccumYearKwh ADD CONSTRAINT accumyear_device_id FOREIGN KEY (fk) REFERENCES Equipment (id);";
         try {
             return update(sql);
         } catch (SQLException e) {
 
         }
         return false;
+    }
+    public void init(){
+        String sql = "declare num number; " +
+                "begin" +
+                "    select count(1) into num from user_tables where table_name='EQUIPMENT';" +
+                "if num > 0 then " +
+                "     dbms_output.put_line('存在!');" +
+                "      execute immediate 'drop table EQUIPMENT'; " +
+                "  end if;" +
+                "   execute immediate 'CREATE TABLE EQUIPMENT (" +
+                "    id varchar(32) primary key," +
+                "    name varchar(32) NULL," +
+                "    port varchar(10) NULL," +
+                "    rate varchar(6) NULL," +
+                "    addr varchar(3) NULL," +
+                "    timeout varchar(4)," +
+                "    data varchar(2)," +
+                "    stop varchar(2)," +
+                "    parity varchar(2)," +
+                "    switch varchar(1)," +
+                "    delayed varchar(1)," +
+                "    dt DATE" +
+                ")';" +
+                "end; ";
+        execute(sql);
+        sql = "declare num1 number;" +
+                "begin" +
+                "    select count(1) into num1 from user_tables where table_name='EquipmentInfo'; " +
+                "if num1 > 0 then  " +
+                "      execute immediate 'drop table EquipmentInfo';" +
+                "  end if;" +
+                "execute immediate 'CREATE TABLE EquipmentInfo (" +
+                "id varchar(32) primary key," +
+                "route NUMBER(2,0)," +
+                "name varchar(32) ," +
+                "attr NUMBER(2,0)," +
+                "fk varchar(32)," +
+                "per NUMBER(3,0) ," +
+                "symbol NUMBER(1,0)," +
+                "dt date," +
+                ")';" +
+                "end; ";
+        execute(sql);
     }
 }

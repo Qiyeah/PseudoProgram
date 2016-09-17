@@ -1,18 +1,10 @@
 package com.ex.qi.utils;
 
-import com.ex.qi.dao.daoImpl.DeviceDaoImpl;
-import com.ex.qi.entity.Device;
-import gnu.io.SerialPort;
 import test.TestAddDataToDatabase;
-import test.TestSerialPort;
 
-import javax.swing.*;
 import java.io.*;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.logging.Level;
 
 /**
  * Created by sunline on 2016/8/23.

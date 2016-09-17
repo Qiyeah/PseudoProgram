@@ -29,12 +29,12 @@ public class DefaultServlet extends HttpServlet {
     private Gson gson = new Gson();
     private BaseDaoImpl mBaseDao = null;
     private TableUtils mTableUtils = null;
-    @Override
+    /*@Override
     public void init() throws ServletException {
         super.init();
         mBaseDao = new BaseDaoImpl();
         mTableUtils = new TableUtils();
-        if (!mBaseDao.tableIsExists("Device")){
+        if (!mBaseDao.tableIsExists("Equipment")){
             mTableUtils.newDeviceTable();
         }
         if (!mBaseDao.tableIsExists("DeviceInfo"))
@@ -62,7 +62,7 @@ public class DefaultServlet extends HttpServlet {
         }
         mBaseDao = null;
         mTableUtils = null;
-    }
+    }*/
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

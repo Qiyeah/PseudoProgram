@@ -1,9 +1,9 @@
 package com.ex.qi.utils;
 
-import com.ex.qi.dao.daoImpl.DeviceDaoImpl;
+import com.ex.qi.dao.daoImpl.EquipmentDaoImpl;
 import com.ex.qi.entity.AC;
 import com.ex.qi.entity.DC;
-import com.ex.qi.entity.Device;
+import com.ex.qi.entity.Equipment;
 import gnu.io.SerialPort;
 
 import java.sql.ResultSet;
@@ -26,10 +26,10 @@ public class DeviceUtils {
      * 查询数据库，加载所有已知的设备信息
      * @return
      */
-    public List<Device> loadDevice() {
+    public List<Equipment> loadDevice() {
         ResultSet mResultSet;
-        mResultSet = new DeviceDaoImpl().queryAllDevice();
-        List<Device> devices = new ArrayList<Device>();
+        mResultSet = new EquipmentDaoImpl().queryAllDevice();
+        List<Equipment> equipments = new ArrayList<Equipment>();
         try {
             while (mResultSet.next()) {
                 String id = mResultSet.getString("_id").trim();
@@ -43,39 +43,39 @@ public class DeviceUtils {
                 String parity = mResultSet.getString("parity").trim();
                 String state = mResultSet.getString("switch").trim();
                 String delay = mResultSet.getString("delayed").trim();
-                devices.add(new Device(id, name, port, rate, addr, timeout, data, stop, parity, state, delay));
+                equipments.add(new Equipment(id, name, port, rate, addr, timeout, data, stop, parity, state, delay));
             }
         } catch (SQLException e) {
             //e.printStackTrace();
         }
-        return devices;
+        return equipments;
     }
 
     /**
      * 通过设备信息，生成串口通信参数
-     * @param device
+     * @param equipment
      * @return
      */
-    public Map<String, Comparable> parseToParams(Device device) {
+    public Map<String, Comparable> parseToParams(Equipment equipment) {
         HashMap<String, Comparable> params = new HashMap<String, Comparable>();
-        params.put(SerialReader.PARAMS_PORT, device.getPort()); // 端口名称
-        params.put(SerialReader.PARAMS_RATE, Integer.valueOf(device.getRate())); // 波特率
-        params.put(SerialReader.PARAMS_DATABITS, Integer.valueOf(device.getDataBits())); // 数据位
-        params.put(SerialReader.PARAMS_STOPBITS, Integer.valueOf(device.getStopBits())); // 停止位
-        params.put(SerialReader.PARAMS_PARITY, Integer.valueOf(device.getParity())); // 无奇偶校验
-        params.put(SerialReader.PARAMS_TIMEOUT, Integer.valueOf(device.getTimeOut())); // 设备超时时间 1秒
-        params.put(SerialReader.PARAMS_DELAY, Integer.valueOf(device.getDelay())); // 端口数据准备时间 1秒
+        params.put(SerialReader.PARAMS_PORT, equipment.getPort()); // 端口名称
+        params.put(SerialReader.PARAMS_RATE, Integer.valueOf(equipment.getRate())); // 波特率
+        params.put(SerialReader.PARAMS_DATABITS, Integer.valueOf(equipment.getDataBits())); // 数据位
+        params.put(SerialReader.PARAMS_STOPBITS, Integer.valueOf(equipment.getStopBits())); // 停止位
+        params.put(SerialReader.PARAMS_PARITY, Integer.valueOf(equipment.getParity())); // 无奇偶校验
+        params.put(SerialReader.PARAMS_TIMEOUT, Integer.valueOf(equipment.getTimeOut())); // 设备超时时间 1秒
+        params.put(SerialReader.PARAMS_DELAY, Integer.valueOf(equipment.getDelay())); // 端口数据准备时间 1秒
         return params;
     }
 
     /**
      * 通过设备信息，生成通信命令
-     * @param device
+     * @param equipment
      * @return
      */
-    public  byte[] generateCommandsViaDevice(Device device) {
-        String id = device.getId();
-        int addr = Integer.parseInt(device.getAddr().trim());
+    public  byte[] generateCommandsViaDevice(Equipment equipment) {
+        String id = equipment.getId();
+        int addr = Integer.parseInt(equipment.getAddr().trim());
         if (id.startsWith("AC")) {
             AC iec = new AC();
             if (!(addr > 0xf)) {

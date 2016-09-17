@@ -11,7 +11,7 @@ import java.io.IOException;
  * Created by sunline on 2016/8/27.
  */
 @WebServlet(name = "alertDeviceServlet",urlPatterns = "/AlertDeviceServlet")
-public class AlertDeviceServlet extends HttpServlet {
+public class AlertEquipmentServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String[] value = req.getParameterValues("device");

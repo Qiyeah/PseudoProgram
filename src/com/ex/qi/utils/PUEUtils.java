@@ -1,12 +1,12 @@
 package com.ex.qi.utils;
 
 import com.ex.qi.dao.BaseKwhDao;
-import com.ex.qi.dao.DeviceInfoDao;
+import com.ex.qi.dao.EquipmentInfoDao;
 import com.ex.qi.dao.daoImpl.AccumKwhDao;
-import com.ex.qi.dao.daoImpl.DeviceInfoDaoImpl;
+import com.ex.qi.dao.daoImpl.EquipmentInfoDaoImpl;
 import com.ex.qi.dao.daoImpl.PresentKwhDao;
-import com.ex.qi.entity.Device;
-import com.ex.qi.entity.DeviceInfo;
+import com.ex.qi.entity.Equipment;
+import com.ex.qi.entity.EquipmentInfo;
 
 import java.util.List;
 
@@ -45,9 +45,9 @@ public class PUEUtils {
         }else  if (ACCUMDAY_PUE == type||ACCUMMONTH_PUE == type||ACCUMYEAR_PUE == type){
             dao = new AccumKwhDao();
         }
-        DeviceInfoDao infoDao = new DeviceInfoDaoImpl();
-        List<Device> devices = new DeviceUtils().loadDevice();
-        int size = devices.size();
+        EquipmentInfoDao infoDao = new EquipmentInfoDaoImpl();
+        List<Equipment> equipments = new DeviceUtils().loadDevice();
+        int size = equipments.size();
         float totalStart = 0f;
         float ITStart = 0f;
         float totalEnd = 0f;
@@ -59,9 +59,9 @@ public class PUEUtils {
          */
 
         for (int i = 0; i < size; i++) {
-            Device d = devices.get(i);
+            Equipment d = equipments.get(i);
             String id = d.getId();
-            List<DeviceInfo> infos = infoDao.findConfigByForeign(d.getId());
+            List<EquipmentInfo> infos = infoDao.findConfigByForeign(d.getId());
            /* System.out.println("id = "+id);
             System.out.println();*/
             /**
@@ -69,8 +69,8 @@ public class PUEUtils {
              */
 
             for (int j = 0; j < infos.size(); j++) {
-                DeviceInfo info = infos.get(j);
-                int route = info.getPath();
+                EquipmentInfo info = infos.get(j);
+                int route = info.getRoute();
                 int attr = info.getPathAttr();
                 int per = info.getPer() / 100;
                 int symbol = info.getSymbol();

@@ -1,11 +1,11 @@
 package com.ex.qi.entity;
 
-import java.util.Date;
+import java.sql.Date;
 
 /**
  * Created by sunline on 2016/8/22.
  */
-public class Device {
+public class Equipment {
     private String mId = "";
     private String mName = "";
     private String mPort = "";
@@ -28,10 +28,10 @@ public class Device {
 
     private Date mDate;
 
-    public Device() {
+    public Equipment() {
     }
 
-    public Device(String id, String name, String port, String rate, String addr) {
+    public Equipment(String id, String name, String port, String rate, String addr) {
         mId = id;
         mName = name;
         mPort = port;
@@ -39,9 +39,9 @@ public class Device {
         mAddr = addr;
     }
 
-    public Device(String id, String name, String port,
-                  String rate, String addr, String timeOut, String dataBits,
-                  String stopBits, String parity, String state, String delay) {
+    public Equipment(String id, String name, String port,
+                     String rate, String addr, String timeOut, String dataBits,
+                     String stopBits, String parity, String state, String delay) {
         mId = id;
         mName = name;
         mPort = port;
@@ -53,6 +53,22 @@ public class Device {
         mParity = parity;
         mState = state;
         mDelay = delay;
+    }
+
+    public Equipment(String mId, String mName, String mPort, String mRate, String mAddr, String mTimeOut,
+                     String mDataBits, String mStopBits, String mParity, String mState, String mDelay, Date mDate) {
+        this.mId = mId;
+        this.mName = mName;
+        this.mPort = mPort;
+        this.mRate = mRate;
+        this.mAddr = mAddr;
+        this.mTimeOut = mTimeOut;
+        this.mDataBits = mDataBits;
+        this.mStopBits = mStopBits;
+        this.mParity = mParity;
+        this.mState = mState;
+        this.mDelay = mDelay;
+        this.mDate = mDate;
     }
 
     public void setTimeOut(String timeOut) {

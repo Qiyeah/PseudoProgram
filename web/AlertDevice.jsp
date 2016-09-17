@@ -1,4 +1,4 @@
-<%@ page import="com.ex.qi.dao.daoImpl.DeviceDaoImpl" %>
+<%@ page import="com.ex.qi.dao.daoImpl.EquipmentDaoImpl" %>
 <%@ page import="java.sql.ResultSet" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.ArrayList" %>
@@ -11,7 +11,7 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
-  DeviceDaoImpl dao = new DeviceDaoImpl();
+  EquipmentDaoImpl dao = new EquipmentDaoImpl();
   ResultSet resultSet = dao.queryAllDevice();
   List<String> names = new ArrayList<>();
   List<String> ids = new ArrayList<>();
@@ -31,7 +31,7 @@
 						设备名称
     					</td>
     					<td align="center" width="20%">
-    						<select name="device" id="device" size="1"  style="width:95%">
+    						<select name="Equipment" id="Equipment" size="1"  style="width:95%">
 		    					<option value="0">--------请选择--------</option>
 		    					<%
                                   for (int i = 1; i < names.size()+1; i++) {

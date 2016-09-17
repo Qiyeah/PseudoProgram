@@ -3,29 +3,29 @@ package com.ex.qi.entity;
 /**
  * Created by sunline on 2016/8/22.
  */
-public class DeviceInfo {
+public class EquipmentInfo {
     private String mId;
-    private int mPath;
+    private int mRoute;
     private String mPathName;
     private int mPathAttr;
     private String fId;
     private int mPer;
     private int mSymbol;
 
-    public DeviceInfo() {
+    public EquipmentInfo() {
     }
 
-    public DeviceInfo(String foreign,int path, int pathAttr, int per, int symbol) {
+    public EquipmentInfo(String foreign, int route, int pathAttr, int per, int symbol) {
         fId = foreign;
-        mPath = path;
+        mRoute = route;
         mPathAttr = pathAttr;
         mPer = per;
         mSymbol = symbol;
     }
 
-    public DeviceInfo(String id, int path, String pathName, int pathAttr, String fId, int per, int symbol) {
+    public EquipmentInfo(String id , String fId,  int route, String pathName, int pathAttr,int per, int symbol) {
         mId = id;
-        mPath = path;
+        mRoute = route;
         mPathName = pathName;
         mPathAttr = pathAttr;
         this.fId = fId;
@@ -57,12 +57,12 @@ public class DeviceInfo {
         mId = id;
     }
 
-    public int getPath() {
-        return mPath;
+    public int getRoute() {
+        return mRoute;
     }
 
-    public void setPath(int path) {
-        mPath = path;
+    public void setRoute(int route) {
+        mRoute = route;
     }
 
     public String getPathName() {

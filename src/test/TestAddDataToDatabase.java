@@ -3,14 +3,13 @@ package test;
 import com.ex.qi.dao.daoImpl.AccumKwhDao;
 import com.ex.qi.dao.daoImpl.*;
 import com.ex.qi.entity.AccumKwh;
-import com.ex.qi.entity.Device;
+import com.ex.qi.entity.Equipment;
 import com.ex.qi.entity.PresentKwh;
 import com.ex.qi.entity.RealKwh;
 import com.ex.qi.utils.DateUtils;
 import com.ex.qi.utils.DeviceUtils;
 import com.ex.qi.utils.IDUtils;
 import com.ex.qi.utils.SerialPortUtils;
-import com.sun.media.sound.SoftTuning;
 
 import java.util.List;
 import java.util.Map;
@@ -31,7 +30,7 @@ public class TestAddDataToDatabase {
     public static final int DC_TIMEOUT = 1;
     public static SerialPortUtils portUtils = new SerialPortUtils();//操作串口的工具类
     public static DeviceUtils deviceUtils = new DeviceUtils();//操作设备的工具类
-    public static List<Device> devices = deviceUtils.loadDevice();//加载所有配置好的设备
+    public static List<Equipment> equipments = deviceUtils.loadDevice();//加载所有配置好的设备
     public static Map<String, Comparable> params = null;//用来设置设备的通信参数
     public static SerialPortUtils mSerialPortUtils = new SerialPortUtils();
 
@@ -60,13 +59,13 @@ public class TestAddDataToDatabase {
         long start = System.currentTimeMillis();
         /*----------------------------------------------------------------*/
 
-        int deviceSize = devices.size();//设备数量
-        if (null != devices && 0 < deviceSize) {//判断是否已经配置设备
+        int deviceSize = equipments.size();//设备数量
+        if (null != equipments && 0 < deviceSize) {//判断是否已经配置设备
             for (int i = 0; i < deviceSize; i++) {//遍历所有设备
-                Device device = devices.get(i);//得到设备实体
-                String id = device.getId();//当前操作的设备ID
-                byte[] cmd = deviceUtils.generateCommandsViaDevice(device);
-                params = deviceUtils.parseToParams(device);//解析设备的通信参数、
+                Equipment equipment = equipments.get(i);//得到设备实体
+                String id = equipment.getId();//当前操作的设备ID
+                byte[] cmd = deviceUtils.generateCommandsViaDevice(equipment);
+                params = deviceUtils.parseToParams(equipment);//解析设备的通信参数、
                 portUtils.open(params);//依据生成的通信参数打开串口，通信开始
                 boolean flag = portUtils.getPortState();
                 /**
