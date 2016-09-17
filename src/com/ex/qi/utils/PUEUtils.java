@@ -127,7 +127,14 @@ public class PUEUtils {
         System.out.println("totalStart = "+totalStart);
         System.out.println("ITEnd = "+ITEnd);
         System.out.println("ITStart = "+ITStart);*/
+        float pue = (totalEnd - totalStart) / (ITEnd - ITStart);
 
-        return (totalEnd - totalStart) / (ITEnd - ITStart);
+        if (pue > 3.5){
+            pue = 3.5f;
+        }else if (pue < 1 ){
+            pue = 1f;
+        }
+
+        return pue;
     }
 }
