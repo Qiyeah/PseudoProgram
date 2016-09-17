@@ -1,11 +1,11 @@
 <component name="ArtifactManager">
-  <artifact type="exploded-war" name="PseudoProgram:war exploded">
-    <output-path>$PROJECT_DIR$/out/artifacts/PseudoProgram_war_exploded</output-path>
+  <artifact type="exploded-war" name="PseudoProgram">
+    <output-path>$PROJECT_DIR$/out/artifacts/PseudoProgram</output-path>
     <root id="root">
       <element id="javaee-facet-resources" facet="PseudoProgram/web/Web" />
       <element id="directory" name="WEB-INF">
         <element id="directory" name="classes">
-          <element id="module-output" name="PseudoProgram" />
+          <element id="javaee-facet-classes" facet="PseudoProgram/web/Web" />
         </element>
       </element>
     </root>

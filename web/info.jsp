@@ -14,7 +14,7 @@
 
 </style>
 <center>
-    <form action="AddEquipmentInfoServlet" method="post" name="addiecconfig">
+    <form action="/PseudoProgram/AddEquipmentInfoServlet" method="post" name="addiecconfig">
         <table width="50%"  border="1" cellspacing="0" cellpadding="3">
             <caption>
                 <h1>测试服务器添加设备配置</h1>

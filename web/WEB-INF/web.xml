@@ -6,4 +6,20 @@
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
+    <servlet>
+        <servlet-name>AddEquipmentServlet</servlet-name>
+        <servlet-class>com.ex.qi.servlet.AddEquipmentServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AddEquipmentServlet</servlet-name>
+        <url-pattern>/AddEquipmentServlet</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>AddEquipmentInfoServlet</servlet-name>
+        <servlet-class>com.ex.qi.servlet.AddEquipmentInfoServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AddEquipmentInfoServlet</servlet-name>
+        <url-pattern>/AddEquipmentInfoServlet</url-pattern>
+    </servlet-mapping>
 </web-app>

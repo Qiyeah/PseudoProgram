@@ -10,15 +10,12 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.sql.Date;
 
 /**
  * Created by sunline on 2016/8/22.
  */
-@WebServlet(name = "add", urlPatterns = "/AddEquipmentServlet")
 public class AddEquipmentServlet extends HttpServlet {
     public int KEY_IEC = 0x01;
     public int KEY_MOD = 0x02;
@@ -33,13 +30,26 @@ public class AddEquipmentServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         System.out.println("doGet is run");
 
+        /**
+         * 从客户端读数据
+         */
+        InputStream is = req.getInputStream();
+        byte[] buf=new byte[1024];
+        int len = 0 ;
+        String str = "";
+        while (-1 != (len = is.read(buf))){
+            str += new String(buf,0,len);
+
+        }
+        System.out.println("str = "+str);
+
         String json = req.getParameter("json");
 
-        System.out.println(json);
+        //System.out.println(json);
 
         Gson gson = new Gson();
 
-        Equipment equipment = gson.fromJson(json, Equipment.class);
+        Equipment equipment = gson.fromJson(str, Equipment.class);
         equipment.setDate(new Date(System.currentTimeMillis()));
 
         EquipmentDaoImpl dao = new EquipmentDaoImpl();

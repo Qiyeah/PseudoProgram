@@ -22,7 +22,7 @@ public class EquipmentDaoImpl extends BaseDaoImpl implements EquipmentDao {
         try {
             return update(sql, params);
         } catch (SQLException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
         return false;
     }
