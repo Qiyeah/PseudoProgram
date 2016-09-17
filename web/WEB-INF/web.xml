@@ -22,4 +22,12 @@
         <servlet-name>AddEquipmentInfoServlet</servlet-name>
         <url-pattern>/AddEquipmentInfoServlet</url-pattern>
     </servlet-mapping>
+    <servlet>
+        <servlet-name>QueryPueServlet</servlet-name>
+        <servlet-class>com.ex.qi.servlet.QueryPueServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>QueryPueServlet</servlet-name>
+        <url-pattern>/QueryPueServlet</url-pattern>
+    </servlet-mapping>
 </web-app>
