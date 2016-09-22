@@ -14,7 +14,7 @@ import java.sql.SQLException;
 public class PresentKwhDao extends BaseKwhDao {
 
     public boolean addDataAtPoint(String table,PresentKwh kwh) {
-        String sql = "insert into "+table+" (_id,fk,route,degree,point,num) values(?,?,?,?,?,?) ";
+        String sql = "insert into "+table+" (id,fk,route,degree,point,num) values(?,?,?,?,?,?) ";
         try {
             return update(sql, new Object[]{kwh.getId(), kwh.getfId(), kwh.getRoute(), kwh.getDegree(),kwh.getPoint(),kwh.getNum()});
         } catch (SQLException e) {
@@ -59,7 +59,7 @@ public class PresentKwhDao extends BaseKwhDao {
 
     public int findTotalByRoute(String table,String foreign, int route) {
         int total = 0;
-        String sql = "select count(_id) as total from "+table+" where fk = ? and route = ?";
+        String sql = "select count(id) as total from "+table+" where fk = ? and route = ?";
         ResultSet result = query(sql, new Object[]{foreign, route});
         try {
             if (result.next()) {

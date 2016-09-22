@@ -8,7 +8,7 @@ import java.sql.*;
  */
 public class DBUtils {
     String driver = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-    String url = "jdbc:sqlserver://localhost:1433;databaseName=sunline";
+    String url = "jdbc:sqlserver://localhost:1433;databaseName=test";
     String user = "sa";
     String pass = "tiger";
     String orclUrl = "jdbc:oracle:thin:@//localhost:1521/orcl";
@@ -18,8 +18,8 @@ public class DBUtils {
     public Connection getConn(){
         Connection conn = null;
         try {
-            Class.forName(Driver);
-            conn = DriverManager.getConnection(orclUrl, orclUser, orclPass);
+            Class.forName(driver);
+            conn = DriverManager.getConnection(url, user, pass);
             if (null != conn){
                 //System.out.println("数据库连接成功");
             }

@@ -17,7 +17,7 @@
   List<String> ids = new ArrayList<>();
   while (resultSet.next()){
     String name = resultSet.getString("name");
-    String id = resultSet.getString("_id");
+    String id = resultSet.getString("id");
     names.add(name);
     ids.add(id);
   }

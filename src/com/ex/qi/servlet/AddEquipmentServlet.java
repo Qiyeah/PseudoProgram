@@ -11,7 +11,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.net.URLDecoder;
 import java.sql.Date;
+import java.util.Base64;
+import java.util.Base64.Decoder;
 
 /**
  * Created by sunline on 2016/8/22.
@@ -22,53 +25,12 @@ public class AddEquipmentServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        doGet(req, resp);
-        System.out.println("doPost is run");
+        parseJson(req, resp);
     }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        System.out.println("doGet is run");
-
-        /**
-         * 从客户端读数据
-         */
-        InputStream is = req.getInputStream();
-        byte[] buf=new byte[1024];
-        int len = 0 ;
-        String str = "";
-        while (-1 != (len = is.read(buf))){
-            str += new String(buf,0,len);
-
-        }
-        System.out.println("str = "+str);
-
-        String json = req.getParameter("json");
-
-        //System.out.println(json);
-
-        Gson gson = new Gson();
-
-        Equipment equipment = gson.fromJson(str, Equipment.class);
-        equipment.setDate(new Date(System.currentTimeMillis()));
-
-        EquipmentDaoImpl dao = new EquipmentDaoImpl();
-
-        boolean flag = false;
-
-
-
-        flag = dao.addEquipment(equipment);
-        printLog(equipment,flag);
-
-        PrintWriter out = resp.getWriter();
-
-        if (flag) {
-            out.write("添加设备成功！");
-        } else
-            out.write("添加设备失败！");
-
-        out.close();
+       doPost(req, resp);
     }
     private void printLog(Equipment equipment, boolean flag){
         StringBuffer sb = new StringBuffer();
@@ -107,6 +69,97 @@ public class AddEquipmentServlet extends HttpServlet {
         }
         sb.append(LogUtils.CRLF);
         LogUtils utils = new LogUtils();
-        utils.writeLog("equipment.log",sb);
+        utils.writeLog("equipment.log", sb);
+    }
+    private void parseJson(HttpServletRequest req, HttpServletResponse resp){
+        InputStream is = null;
+        String encoding = req.getCharacterEncoding();
+        String contentType = req.getContentType();
+        String uri= req.getRequestURI();
+        System.out.println(uri);
+        System.out.println(contentType);
+        int len = 0;
+        try {
+            req.setCharacterEncoding(encoding);
+            len = req.getContentLength();
+            is = req.getInputStream();
+            System.out.println("len = " + len);
+            byte[] buf = new byte[len];
+            is.read(buf);
+            String res = new String(buf);
+            String res1 = new String(buf,encoding);
+            res =  new URLDecoder().decode(res,encoding);
+            System.out.println(res);
+            System.out.println(res1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    private String parseParameter( HttpServletRequest req, HttpServletResponse resp){
+        StringBuilder buffer = new StringBuilder();
+        BufferedReader reader=null;
+        try{
+            reader = new BufferedReader(new InputStreamReader(req.getInputStream(),"UTF-8"));
+            String line=null;
+            while((line = reader.readLine())!=null){
+                buffer.append(line);
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }finally{
+            if(null!=reader){
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        String json = buffer.toString();
+        System.out.println(json);
+        return json;
+    }
+    private void handlerAndroidRequest(HttpServletRequest req, HttpServletResponse resp){
+        /**
+         * 从客户端读数据
+         */
+        try {
+            InputStream is = req.getInputStream();
+            byte[] buf=new byte[1024];
+            int len = 0 ;
+            String str = "";
+            while (-1 != (len = is.read(buf))){
+                str += new String(buf,0,len);
+            }
+            System.out.println("str = "+str);
+
+            String json = req.getParameter("json");
+
+            //System.out.println(json);
+
+            Gson gson = new Gson();
+
+            Equipment equipment = gson.fromJson(str, Equipment.class);
+            equipment.setDate(new Date(System.currentTimeMillis()));
+
+            EquipmentDaoImpl dao = new EquipmentDaoImpl();
+
+            boolean flag = false;
+
+
+            flag = dao.addEquipment(equipment);
+            printLog(equipment,flag);
+
+            PrintWriter out = resp.getWriter();
+
+            if (flag) {
+                out.write("添加设备成功！");
+            } else
+                out.write("添加设备失败！");
+
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

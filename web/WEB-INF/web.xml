@@ -30,4 +30,12 @@
         <servlet-name>QueryPueServlet</servlet-name>
         <url-pattern>/QueryPueServlet</url-pattern>
     </servlet-mapping>
+    <servlet>
+        <servlet-name>DefaultServlet</servlet-name>
+        <servlet-class>com.ex.qi.servlet.DefaultServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DefaultServlet</servlet-name>
+        <url-pattern>/DefaultServlet</url-pattern>
+    </servlet-mapping>
 </web-app>

@@ -10,12 +10,12 @@ import java.sql.SQLException;
 public class TableUtils extends BaseDaoImpl {
     public boolean newRealKwhTable() {
         String sql = "CREATE TABLE RealKwh (" +
-                "_id CHAR(32) NOT NULL," +
+                "id CHAR(32) NOT NULL," +
                 "fk CHAR(32) NULL," +
                 "route SMALLINT NULL," +
                 "degree  REAL NULL," +
                 "dt DATETIME  NULL DEFAULT getdate()," +
-                "PRIMARY KEY (_id) " +
+                "PRIMARY KEY (id) " +
                 ");" +
                 "ALTER TABLE RealKwh ADD CONSTRAINT real_device_id FOREIGN KEY (fk) REFERENCES Equipment (id);";
         try {
@@ -28,14 +28,14 @@ public class TableUtils extends BaseDaoImpl {
 
     public boolean newYearKwhTable() {
         String sql = "CREATE TABLE YearKwh (" +
-                "_id CHAR(32) NOT NULL," +
+                "id CHAR(32) NOT NULL," +
                 "fk CHAR(32) NULL," +
                 "route SMALLINT NULL," +
                 "degree  REAL  NULL," +
                 "point SMALLINT NULL," +
                 "num SMALLINT NULL," +
                 "dt DATE NULL DEFAULT getdate()," +
-                "PRIMARY KEY (_id) " +
+                "PRIMARY KEY (id) " +
                 ");" +
                 "ALTER TABLE YearKwh ADD CONSTRAINT year_device_id FOREIGN KEY (fk) REFERENCES Equipment (id);";
         try {
@@ -48,14 +48,14 @@ public class TableUtils extends BaseDaoImpl {
 
     public boolean newDayKwhTable() {
         String sql = "CREATE TABLE DayKwh (" +
-                "_id CHAR(32) NOT NULL," +
+                "id CHAR(32) NOT NULL," +
                 "fk CHAR(32) NULL," +
                 "route DECIMAL(3) NULL," +
                 "degree  REAL  NULL," +
                 "point SMALLINT NULL," +
                 "num SMALLINT NULL," +
                 "dt DATETIME  NULL DEFAULT getdate()," +
-                "PRIMARY KEY (_id) " +
+                "PRIMARY KEY (id) " +
                 ");" +
                 "ALTER TABLE DayKwh ADD CONSTRAINT day_device_id FOREIGN KEY (fk) REFERENCES Equipment (id);";
         try {
@@ -68,14 +68,14 @@ public class TableUtils extends BaseDaoImpl {
 
     public boolean newMonthKwhTable() {
         String sql = "CREATE TABLE MonthKwh (" +
-                "_id CHAR(32) NOT NULL," +
+                "id CHAR(32) NOT NULL," +
                 "fk CHAR(32) NULL," +
                 "route DECIMAL(3) NULL," +
                 "degree  REAL  NULL," +
                 "point SMALLINT NULL," +
                 "num SMALLINT NULL," +
                 "dt DATE  NULL DEFAULT getdate()," +
-                "PRIMARY KEY (_id) " +
+                "PRIMARY KEY (id) " +
                 ");" +
                 "ALTER TABLE MonthKwh ADD CONSTRAINT month_device_id FOREIGN KEY (fk) REFERENCES Equipment (id);";
         try {
@@ -86,7 +86,7 @@ public class TableUtils extends BaseDaoImpl {
         return false;
     }
 
-    public boolean newDeviceTable() {
+    public boolean newEquipmentTable() {
         String sql = "CREATE TABLE Equipment (" +
                 "id varchar(32) NOT NULL," +
                 "name varchar(32) NULL," +
@@ -99,7 +99,7 @@ public class TableUtils extends BaseDaoImpl {
                 "parity varchar(2) DEFAULT '0'," +
                 "switch varchar(1) DEFAULT '1'," +
                 "delayed varchar(1) DEFAULT '1'," +
-                "dt DATE DEFAULT sysdate," +
+                "dt DATE DEFAULT getdate()," +
                 "primary key(id)" +
                 ")";
         try {
@@ -110,16 +110,16 @@ public class TableUtils extends BaseDaoImpl {
         return false;
     }
 
-    public boolean newDeviceInfoTable() {
+    public boolean newEquipmentInfoTable() {
         String sql = "CREATE TABLE EquipmentInfo (" +
                 "id varchar(32) NOT NULL," +
-                "route NUMBER(2,0)," +
+                "route SMALLINT," +
                 "name varchar(32) ," +
-                "attr NUMBER(2,0)," +
+                "attr SMALLINT," +
                 "fk varchar(32)," +
-                "per NUMBER(3,0) DEFAULT 100," +
-                "symbol NUMBER(1,0) DEFAULT 1," +
-                "dt date DEFAULT sysdate," +
+                "per SMALLINT DEFAULT 100," +
+                "symbol SMALLINT DEFAULT 1," +
+                "dt date DEFAULT getdate()," +
                 "PRIMARY KEY (id)" +
                 ");" +
                 "ALTER TABLE DeviceInfo ADD CONSTRAINT device_config_id FOREIGN KEY (fk) REFERENCES Equipment (id);";
@@ -140,7 +140,7 @@ public class TableUtils extends BaseDaoImpl {
                 "point SMALLINT NULL," +
                 "num SMALLINT NULL," +
                 "dt DATETIME  NULL DEFAULT getdate()," +
-                "PRIMARY KEY (_id) " +
+                "PRIMARY KEY (id) " +
                 ");" +
                 "ALTER TABLE AccumDayKwh ADD CONSTRAINT accumday_device_id FOREIGN KEY (fk) REFERENCES Equipment (id)";
         try {
@@ -153,14 +153,14 @@ public class TableUtils extends BaseDaoImpl {
 
     public boolean newAccumMonthKwhTable() {
         String sql = "CREATE TABLE AccumMonthKwh (" +
-                "_id CHAR(32) NOT NULL," +
+                "id CHAR(32) NOT NULL," +
                 "fk CHAR(32) NULL," +
                 "route DECIMAL(3) NULL," +
                 "degree  REAL  NULL," +
                 "point SMALLINT NULL," +
                 "num SMALLINT NULL," +
                 "dt DATE  NULL DEFAULT getdate()," +
-                "PRIMARY KEY (_id) " +
+                "PRIMARY KEY (id) " +
                 ");" +
                 "ALTER TABLE AccumMonthKwh ADD CONSTRAINT acmonth_device_id FOREIGN KEY (fk) REFERENCES Equipment (id);";
         try {
@@ -173,14 +173,14 @@ public class TableUtils extends BaseDaoImpl {
 
     public boolean newAccumYearKwhTable() {
         String sql = "CREATE TABLE AccumYearKwh (" +
-                "_id CHAR(32) NOT NULL," +
+                "id CHAR(32) NOT NULL," +
                 "fk CHAR(32) NULL," +
                 "route SMALLINT NULL," +
                 "degree  REAL  NULL," +
                 "point SMALLINT NULL," +
                 "num SMALLINT NULL," +
                 "dt DATE NULL DEFAULT getdate()," +
-                "PRIMARY KEY (_id) " +
+                "PRIMARY KEY (id) " +
                 ");" +
                 "ALTER TABLE AccumYearKwh ADD CONSTRAINT accumyear_device_id FOREIGN KEY (fk) REFERENCES Equipment (id);";
         try {

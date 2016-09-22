@@ -5,9 +5,9 @@
   Time: 13:04
   To change this template use File | Settings | File Templates.
 --%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
 <center>
-  <form action="/PseudoProgram/AddEquipmentServlet" method="post" name="addiec">
+  <form action="/AddEquipmentServlet" method="post" name="addiec">
     <table width="50%"  border="1" cellspacing="0" cellpadding="3">
       <caption>
         <h1>测试服务器添加设备</h1>

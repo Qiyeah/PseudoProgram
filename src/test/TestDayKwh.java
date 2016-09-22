@@ -23,10 +23,10 @@ public class TestDayKwh {
         mBaseDao = new BaseDaoImpl();
         mTableUtils = new TableUtils();
         if (!mBaseDao.tableIsExists("Equipment")){
-            mTableUtils.newDeviceTable();
+            mTableUtils.newEquipmentTable();
         }
         if (!mBaseDao.tableIsExists("DeviceInfo"))
-            mTableUtils.newDeviceInfoTable();
+            mTableUtils.newEquipmentInfoTable();
         if (!mBaseDao.tableIsExists("RealKwh")){
             mTableUtils.newRealKwhTable();
         }

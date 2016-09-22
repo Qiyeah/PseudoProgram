@@ -42,9 +42,11 @@ public class AddEquipmentInfoServlet extends HttpServlet {
         Gson gson = new Gson();
 
         InfoJson infoJson = gson.fromJson(str, InfoJson.class);
+
         List<EquipmentInfo> list = infoJson.getList();
         for (int i = 0; i < list.size(); i++) {
             EquipmentInfo info = list.get(i);
+            String json = gson.toJson(info,EquipmentInfo.class);
             /**
              * 更新到数据库
              */

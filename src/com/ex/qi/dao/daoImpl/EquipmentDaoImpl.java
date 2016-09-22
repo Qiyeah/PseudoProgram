@@ -29,7 +29,7 @@ public class EquipmentDaoImpl extends BaseDaoImpl implements EquipmentDao {
 
     @Override
     public ResultSet queryDevice(String id) throws SQLException {
-        String sql = "select * from Equipment where _id = ?";
+        String sql = "select * from Equipment where id = ?";
         return query(sql, id);
     }
 

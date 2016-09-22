@@ -32,7 +32,7 @@ public class DeviceUtils {
         List<Equipment> equipments = new ArrayList<Equipment>();
         try {
             while (mResultSet.next()) {
-                String id = mResultSet.getString("_id").trim();
+                String id = mResultSet.getString("id").trim();
                 String name = mResultSet.getString("name").trim();
                 String port = mResultSet.getString("port").trim();
                 String rate = mResultSet.getString("rate").trim();
