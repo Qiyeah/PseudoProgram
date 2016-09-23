@@ -28,7 +28,7 @@ public class DeviceUtils {
      */
     public List<Equipment> loadDevice() {
         ResultSet mResultSet;
-        mResultSet = new EquipmentDaoImpl().queryAllDevice();
+        mResultSet = new EquipmentDaoImpl().findAllEquipments();
         List<Equipment> equipments = new ArrayList<Equipment>();
         try {
             while (mResultSet.next()) {

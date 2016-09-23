@@ -113,12 +113,13 @@ public class TableUtils extends BaseDaoImpl {
     public boolean newEquipmentInfoTable() {
         String sql = "CREATE TABLE EquipmentInfo (" +
                 "id varchar(32) NOT NULL," +
+                "fk varchar(32)," +
                 "route SMALLINT," +
                 "name varchar(32) ," +
-                "attr SMALLINT," +
-                "fk varchar(32)," +
-                "per SMALLINT DEFAULT 100," +
-                "symbol SMALLINT DEFAULT 1," +
+                "total_symbol SMALLINT DEFAULT 1," +
+                "total_per SMALLINT DEFAULT 100," +
+                "it_symbol SMALLINT DEFAULT 1," +
+                "it_per SMALLINT DEFAULT 100," +
                 "dt date DEFAULT getdate()," +
                 "PRIMARY KEY (id)" +
                 ");" +

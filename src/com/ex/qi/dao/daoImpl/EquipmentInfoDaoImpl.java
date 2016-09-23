@@ -15,29 +15,36 @@ import java.util.List;
 public class EquipmentInfoDaoImpl extends BaseDaoImpl implements EquipmentInfoDao {
 
     @Override
-    public boolean addConfig(EquipmentInfo equipmentInfo){
-        String sql = "";
+    public boolean addEquipmentInfo(EquipmentInfo equipmentInfo){
         Object[] params = null;
-        sql = "insert into EQUIPMENTINFO(id,route,name,attr,fk,per,symbol) values(?,?,?,?,?,?,?)";
-        params = new Object[]{equipmentInfo.getId(), equipmentInfo.getRoute(), equipmentInfo.getPathName(),
-                equipmentInfo.getPathAttr(), equipmentInfo.getfId(), equipmentInfo.getPer(), equipmentInfo.getSymbol()};
+        String sql = "insert into EQUIPMENTINFO(id,fk,route,name,total_symbol,total_per,it_symbol,it_per) values(?,?,?,?,?,?,?,?)";
+        params = new Object[]{equipmentInfo.getId(), equipmentInfo.getfId(), equipmentInfo.getRoute(),
+                equipmentInfo.getRouteName(),equipmentInfo.getTotalSymbol(),equipmentInfo.getTotalPer(),
+                equipmentInfo.getITSymbol(),equipmentInfo.getITPer()};
         try {
             return update(sql, params);
         } catch (SQLException e) {
-
+            e.printStackTrace();
         }
         return false;
     }
 
     @Override
-    public boolean updateConfig(EquipmentInfo equipmentInfo) throws SQLException {
-        String sql = "update EQUIPMENTINFO(name,attr,per) values(?,?,?) where fk = ? and route = ? ";
-        Object[] params = new Object[]{equipmentInfo.getPathName(), equipmentInfo.getPathAttr(), equipmentInfo.getPer(), equipmentInfo.getfId(), equipmentInfo.getRoute()};
-        return update(sql, params);
+    public boolean updateEquipmentInfo(EquipmentInfo info){
+        String sql = "update EQUIPMENTINFO(name,total_symbol,total_per,it_symbol,it_per) values(?,?,?,?,?) " +
+                "where id = ? ";
+        Object[] params = new Object[]{info.getRouteName(), info.getTotalSymbol(), info.getTotalPer(),
+                info.getITSymbol(), info.getITPer(),info.getId()};
+        try {
+            return update(sql, params);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     @Override
-    public boolean deleteConfig(String fId) throws SQLException {
+    public boolean deleteEquipmentInfos(String fId) throws SQLException {
         String sql = "delete from Equipment where fk = fId";
         return update(sql, fId);
     }
@@ -57,22 +64,40 @@ public class EquipmentInfoDaoImpl extends BaseDaoImpl implements EquipmentInfoDa
         return 0;
     }
 
-    public List<EquipmentInfo> findConfigByForeign(String foreign){
+    public List<EquipmentInfo> findEquipmentInfos(String foreign){
         List<EquipmentInfo> list = new ArrayList<>();
-        String sql = "select fk,route,attr,per,symbol from EQUIPMENTINFO";
-        ResultSet set = query(sql);
+        String sql = "select id,fk,name,route,total_symbol,total_per,it_symbol,it_per from EQUIPMENTINFO where fk = ?";
+        ResultSet set = query(sql,foreign);
         try {
             while (set.next()){
+                String id = set.getString("id");
                 String fk = set.getString("fk");
+                String name = set.getString("name");
                 int route = set.getInt("route");
-                int attr = set.getInt("attr");
-                int per = set.getInt("per");
-                int symbol = set.getByte("symbol");
-                list.add(new EquipmentInfo(fk,route,attr,per,symbol));
+                int total_symbol = set.getInt("total_symbol");
+                int total_per = set.getInt("total_per");
+                int it_symbol = set.getInt("it_symbol");
+                int it_per = set.getInt("it_per");
+                list.add(new EquipmentInfo(id,fk,route,name,total_symbol,total_per,it_symbol,it_per));
             }
         } catch (SQLException e) {
             //e.printStackTrace();
         }
         return list;
+    }
+    public boolean isExists(String foreign,int route){
+        String sql = "select count(route) as num from EQUIPMENTINFO where fk = ? and route = ? ";
+        ResultSet set = query(sql,new Object[]{foreign,route});
+        try {
+            while (set.next()){
+                int num = set.getInt("num");
+                if (0 < num){
+                    return true;
+                }
+            }
+        } catch (SQLException e) {
+            //e.printStackTrace();
+        }
+        return false;
     }
 }

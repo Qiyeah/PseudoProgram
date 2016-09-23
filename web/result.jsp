@@ -12,7 +12,7 @@
 <%
     String id = request.getParameter("id");
     EquipmentDaoImpl dao = new EquipmentDaoImpl();
-    ResultSet set = dao.queryDevice(id);
+    ResultSet set = dao.findEquipment(id);
     Equipment equipment = null;
    while (set.next()) {
         String name = set.getString("name");

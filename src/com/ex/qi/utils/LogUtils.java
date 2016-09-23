@@ -10,9 +10,9 @@ import java.util.Date;
 public class LogUtils {
     public static final String CRLF = "\r\n";
 
-    public static final String SPLIT1 = "--------------------------------------------------------日志开始标签-----------------------------------------------------------------";
-    public static final String SPLIT2 = "--------------------------------------------------------";
-    public static final String SPLIT3 = "********************************************************日志结束标签*****************************************************************";
+    public static final String SPLIT1 = "-------------------------------------------------------------------日志开始标签-------------------------------------------------------------------";
+    public static final String SPLIT2 = "-------------------------------------------------------------------";
+    public static final String SPLIT3 = "********************************************************日志结束标签********************************************************";
     public static final String separator = File.separator;
     public static File file = null;
     public static OutputStreamWriter writer = null;
@@ -60,7 +60,6 @@ public class LogUtils {
     public static void openIO(String fileName) {
         try {
             File file = new File("G:"+separator+"java_space"+separator+"PseudoProgram"+separator+"log"+separator+fileName);
-
             if (!file.exists()) {
                 file.getParentFile().mkdirs();
                 file.createNewFile();

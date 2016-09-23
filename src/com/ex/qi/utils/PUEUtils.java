@@ -61,7 +61,7 @@ public class PUEUtils {
         for (int i = 0; i < size; i++) {
             Equipment d = equipments.get(i);
             String id = d.getId();
-            List<EquipmentInfo> infos = infoDao.findConfigByForeign(d.getId());
+            List<EquipmentInfo> infos = infoDao.findEquipmentInfos(d.getId());
            /* System.out.println("id = "+id);
             System.out.println();*/
             /**
@@ -71,9 +71,9 @@ public class PUEUtils {
             for (int j = 0; j < infos.size(); j++) {
                 EquipmentInfo info = infos.get(j);
                 int route = info.getRoute();
-                int attr = info.getPathAttr();
-                int per = info.getPer() / 100;
-                int symbol = info.getSymbol();
+                int attr = info.getTotalSymbol();
+                int per = info.getTotalPer() / 100;
+                int symbol = info.getTotalSymbol();
              /*   System.out.println("route = "+route);
                 System.out.println("attr = "+attr);
                 System.out.println("per = "+per);

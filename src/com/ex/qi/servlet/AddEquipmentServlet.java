@@ -2,6 +2,7 @@ package com.ex.qi.servlet;
 
 import com.ex.qi.dao.daoImpl.EquipmentDaoImpl;
 import com.ex.qi.entity.Equipment;
+import com.ex.qi.http.HttpUtils;
 import com.ex.qi.utils.LogUtils;
 import com.google.gson.Gson;
 
@@ -25,7 +26,9 @@ public class AddEquipmentServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        parseJson(req, resp);
+        String className = getClass().getName();
+        new HttpUtils().handlerAndroidRequest(className,req);
+        //handlerAndroidRequest(req, resp);
     }
 
     @Override
@@ -131,33 +134,16 @@ public class AddEquipmentServlet extends HttpServlet {
             while (-1 != (len = is.read(buf))){
                 str += new String(buf,0,len);
             }
-            System.out.println("str = "+str);
-
-            String json = req.getParameter("json");
-
-            //System.out.println(json);
-
-            Gson gson = new Gson();
-
-            Equipment equipment = gson.fromJson(str, Equipment.class);
-            equipment.setDate(new Date(System.currentTimeMillis()));
-
-            EquipmentDaoImpl dao = new EquipmentDaoImpl();
-
-            boolean flag = false;
-
-
-            flag = dao.addEquipment(equipment);
-            printLog(equipment,flag);
-
-            PrintWriter out = resp.getWriter();
-
-            if (flag) {
-                out.write("添加设备成功！");
-            } else
-                out.write("添加设备失败！");
-
-            out.close();
+            if (null != str && !"".equals(str)){
+                System.out.println("str = "+str);
+                Gson gson = new Gson();
+                Equipment equipment = gson.fromJson(str, Equipment.class);
+                equipment.setDate(new Date(System.currentTimeMillis()));
+                EquipmentDaoImpl dao = new EquipmentDaoImpl();
+                boolean flag = false;
+                flag = dao.addEquipment(equipment);
+                printLog(equipment,flag);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

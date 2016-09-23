@@ -12,7 +12,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
   EquipmentDaoImpl dao = new EquipmentDaoImpl();
-  ResultSet resultSet = dao.queryAllDevice();
+  ResultSet resultSet = dao.findAllEquipments();
   List<String> names = new ArrayList<>();
   List<String> ids = new ArrayList<>();
   while (resultSet.next()){
