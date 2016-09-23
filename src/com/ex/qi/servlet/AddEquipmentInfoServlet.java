@@ -33,10 +33,10 @@ public class AddEquipmentInfoServlet extends HttpServlet {
         doPost(req, resp);
     }
 
-    private void handlerAndroidRequest(HttpServletRequest req, HttpServletResponse resp) {
-        /**
+    /*private void handlerAndroidRequest(HttpServletRequest req, HttpServletResponse resp) {
+        *//**
          * 从客户端读数据
-         */
+         *//*
         try {
             InputStream is = req.getInputStream();
             byte[] buf = new byte[1024];
@@ -104,5 +104,5 @@ public class AddEquipmentInfoServlet extends HttpServlet {
         }
         sb.append(LogUtils.CRLF);
         logUtils.writeLog("info.txt", sb);
-    }
+    }*/
 }

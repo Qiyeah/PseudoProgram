@@ -35,7 +35,7 @@ public class AddEquipmentServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
        doPost(req, resp);
     }
-    private void printLog(Equipment equipment, boolean flag){
+    /*private void printLog(Equipment equipment, boolean flag){
         StringBuffer sb = new StringBuffer();
         sb.append("ID = " + equipment.getId());
         sb.append(LogUtils.CRLF);
@@ -123,9 +123,8 @@ public class AddEquipmentServlet extends HttpServlet {
         return json;
     }
     private void handlerAndroidRequest(HttpServletRequest req, HttpServletResponse resp){
-        /**
-         * 从客户端读数据
-         */
+        //从客户端读数据
+
         try {
             InputStream is = req.getInputStream();
             byte[] buf=new byte[1024];
@@ -147,5 +146,5 @@ public class AddEquipmentServlet extends HttpServlet {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 }
