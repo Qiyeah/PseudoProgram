@@ -31,8 +31,8 @@ public class EquipmentInfoDaoImpl extends BaseDaoImpl implements EquipmentInfoDa
 
     @Override
     public boolean updateEquipmentInfo(EquipmentInfo info){
-        String sql = "update EQUIPMENTINFO(name,total_symbol,total_per,it_symbol,it_per) values(?,?,?,?,?) " +
-                "where id = ? ";
+        String sql = "update EQUIPMENTINFO set name = ?,total_symbol = ?,total_per = ?,it_symbol = ?,it_per = ? " +
+                "where id = ?";
         Object[] params = new Object[]{info.getRouteName(), info.getTotalSymbol(), info.getTotalPer(),
                 info.getITSymbol(), info.getITPer(),info.getId()};
         try {

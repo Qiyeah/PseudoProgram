@@ -30,7 +30,7 @@ public class LogUtils {
     public void writeLog(String file,StringBuffer str) {
         openIO(file);
         try {
-            System.out.println(null == bufWriter);
+//            System.out.println(null == bufWriter);
             bufWriter.append(CRLF);
             bufWriter.append(date2Str());
             bufWriter.append(CRLF);
