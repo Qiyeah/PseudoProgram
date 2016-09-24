@@ -69,4 +69,13 @@ public class EquipmentDaoImpl extends BaseDaoImpl implements EquipmentDao {
         }
         return false;
     }
+    public boolean deleteEquipment(String id){
+        String sql = "delete Equipment where id = ? ";
+        try {
+            return update(sql,id);
+        } catch (SQLException e) {
+
+        }
+        return false;
+    }
 }

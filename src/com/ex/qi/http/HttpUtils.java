@@ -20,6 +20,7 @@ import java.util.List;
  */
 public class HttpUtils {
     public HttpUtils() {
+
     }
 
     public void handlerAndroidRequest(String className, HttpServletRequest req) {
@@ -39,7 +40,7 @@ public class HttpUtils {
             boolean flag = false;
             if (null != str && !"".equals(str)) {
                 System.out.println("str = " + str);
-                flag = storage2Database(className, str);
+                flag = operation2Database(className, str);
             } else {
                 System.out.println("服务器没有接收到数据！");
             }
@@ -61,7 +62,7 @@ public class HttpUtils {
         }
     }
 
-    private boolean storage2Database(String className, String str) {
+    private boolean operation2Database(String className, String str) {
         boolean flag = false;
         Gson gson = new Gson();
         if (className.equals("com.ex.qi.servlet.AddEquipmentServlet")) {
@@ -86,9 +87,35 @@ public class HttpUtils {
                 }
                 printLog(flag, info);
             }
+        } else if (className.equals("com.ex.qi.servlet.DeleteEquipmentServlet")) {
+            EquipmentDaoImpl dao = new EquipmentDaoImpl();
+            flag = dao.deleteEquipment(str);
+            printLog(flag, str);
+        } else if (className.equals("com.ex.qi.servlet.DeleteEquipmentInfoServlet")) {
+            EquipmentInfoDaoImpl dao = new EquipmentInfoDaoImpl();
+            flag = dao.deleteEquipmentInfos(str);
+            printLog(flag, str);
         }
 
         return flag;
+    }
+
+    private void printLog(boolean flag, String str) {
+        StringBuffer sb = new StringBuffer();
+        LogUtils logUtils = new LogUtils();
+        sb.append(str);
+        sb.append(LogUtils.CRLF);
+        try {
+            if (flag) {
+                sb.append(new String("删除设备成功".getBytes(), "gbk"));
+            } else {
+                sb.append(new String("删除设备失败".getBytes(), "gbk"));
+            }
+            sb.append(LogUtils.CRLF);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        logUtils.writeLog("equipment.txt", sb);
     }
 
     private void printLog(boolean flag, EquipmentInfo info) {

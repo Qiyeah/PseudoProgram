@@ -1,7 +1,8 @@
 <component name="ArtifactManager">
   <artifact type="exploded-war" name="Server">
-    <output-path>D:/apache-tomcat-8.0.37/webapps</output-path>
+    <output-path>$PROJECT_DIR$/out/artifacts/Server</output-path>
     <root id="root">
+      <element id="javaee-facet-resources" facet="PseudoProgram/web/Web" />
       <element id="directory" name="WEB-INF">
         <element id="directory" name="classes">
           <element id="module-output" name="PseudoProgram" />
@@ -17,10 +18,9 @@
           <element id="file-copy" path="$PROJECT_DIR$/web/WEB-INF/lib/commons-logging-1.1.1.jar" />
           <element id="file-copy" path="$PROJECT_DIR$/web/WEB-INF/lib/commons-beanutils-1.8.0.jar" />
           <element id="file-copy" path="$PROJECT_DIR$/web/WEB-INF/lib/commons-collections-3.2.1.jar" />
-          <element id="file-copy" path="$APPLICATION_HOME_DIR$/lib/groovy-all-2.3.9.jar" />
+          <element id="file-copy" path="E:/apache-tomcat-8.0.37/lib/servlet-api.jar" />
         </element>
       </element>
-      <element id="javaee-facet-resources" facet="PseudoProgram/web/Web" />
     </root>
   </artifact>
 </component>

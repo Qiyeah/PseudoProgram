@@ -44,9 +44,14 @@ public class EquipmentInfoDaoImpl extends BaseDaoImpl implements EquipmentInfoDa
     }
 
     @Override
-    public boolean deleteEquipmentInfos(String fId) throws SQLException {
-        String sql = "delete from Equipment where fk = fId";
-        return update(sql, fId);
+    public boolean deleteEquipmentInfos(String fId){
+        String sql = "delete EquipmentInfo where fk = fId";
+        try {
+            return update(sql, fId);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
 
