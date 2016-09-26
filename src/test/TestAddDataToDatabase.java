@@ -35,7 +35,7 @@ public class TestAddDataToDatabase {
     public static SerialPortUtils mSerialPortUtils = new SerialPortUtils();
 
     public static void main(String[] args) {
-        for (int i = 1; i < 5000 * 100; i++) {
+        for (int i = 1; i < 5; i++) {
          /*   System.out.println();
             System.out.println("采集程序第 【 " + i + " 】次运行");
             System.out.println(SPLIT1);*/
@@ -47,7 +47,7 @@ public class TestAddDataToDatabase {
             sb.append(SPLIT1);
             sb.append(CRLF);
             addDataToDatabase();
-            mSerialPortUtils.writeLog(sb);
+//            mSerialPortUtils.writeLog(sb);
         }
 
     }
@@ -72,14 +72,15 @@ public class TestAddDataToDatabase {
                  * 1、依据设备ID判断设备类型
                  * 2、接收设备数据
                  */
-               /* if (id.startsWith("AC")) {//判断为多路表
+                if (id.startsWith("AC")) {//判断为多路表
+                    System.out.println(id);
                     portUtils.sendMessage(cmd, AC_TIMEOUT);
-                    if (flag) {
+                   /* if (flag) {
                         float[] degrees = portUtils.parseACDegrees();//把数据解析成电度数值
                         addData2Database(id, degrees);
 //                        System.out.println("\n-***************************************************-");
-                    }
-                } else */
+                    }*/
+                } else
                 if (id.startsWith("DC")) {//判断为直流电间
                     portUtils.sendMessage(cmd, DC_TIMEOUT);
                /*     for (byte b : cmd) {

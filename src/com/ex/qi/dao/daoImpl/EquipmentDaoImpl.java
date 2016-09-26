@@ -29,7 +29,7 @@ public class EquipmentDaoImpl extends BaseDaoImpl implements EquipmentDao {
     public boolean updateEquipment(Equipment equipment) {
         String sql = "";
         Object[] params = null;
-        sql = "update Equipment set id = ?, name = ?, port = ?, rate = ?, addr = ?,timeout = ?" +
+        sql = "update Equipment set name = ?, port = ?, rate = ?, addr = ?,timeout = ?" +
                 ",data = ?,stop = ?,parity = ?,switch = ?,delayed = ?,dt = getdate()" +
                 "where id = ? ";
         params = new Object[]{equipment.getName(), equipment.getPort(),
@@ -38,7 +38,7 @@ public class EquipmentDaoImpl extends BaseDaoImpl implements EquipmentDao {
         try {
             return update(sql, params);
         } catch (SQLException e) {
-            //e.printStackTrace();
+            e.printStackTrace();
         }
         return false;
     }
@@ -70,7 +70,7 @@ public class EquipmentDaoImpl extends BaseDaoImpl implements EquipmentDao {
         return false;
     }
     public boolean deleteEquipment(String id){
-        String sql = "delete Equipment where id = ? ";
+        String sql = "delete from Equipment where id = ? ";
         try {
             return update(sql,id);
         } catch (SQLException e) {

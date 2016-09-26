@@ -3,4 +3,38 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
          version="3.1">
+    <servlet>
+        <servlet-name>AddEquipmentServlet</servlet-name>
+        <servlet-class>com.ex.qi.servlet.AddEquipmentServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>AddEquipmentInfoServlet</servlet-name>
+        <servlet-class>com.ex.qi.servlet.AddEquipmentInfoServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteEquipmentServlet</servlet-name>
+        <servlet-class>com.ex.qi.servlet.DeleteEquipmentServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteEquipmentInfoServlet</servlet-name>
+        <servlet-class>com.ex.qi.servlet.DeleteEquipmentServlet</servlet-class>
+    </servlet>
+
+
+    <servlet-mapping>
+        <servlet-name>AddEquipmentInfoServlet</servlet-name>
+        <url-pattern>/AddEquipmentInfoServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AddEquipmentServlet</servlet-name>
+        <url-pattern>/AddEquipmentServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteEquipmentServlet</servlet-name>
+        <url-pattern>/DeleteEquipmentServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteEquipmentInfoServlet</servlet-name>
+        <url-pattern>/DeleteEquipmentInfoServlet</url-pattern>
+    </servlet-mapping>
 </web-app>

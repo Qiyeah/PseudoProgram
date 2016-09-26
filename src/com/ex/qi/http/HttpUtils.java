@@ -37,17 +37,11 @@ public class HttpUtils {
             while (-1 != (len = is.read(buf))) {
                 str += new String(buf, 0, len);
             }
-            boolean flag = false;
             if (null != str && !"".equals(str)) {
-                System.out.println("str = " + str);
-                flag = operation2Database(className, str);
+                System.out.println("从Android客户端接收到的数据：\n" + str+"\n");
+                operation2Database(className, str);
             } else {
                 System.out.println("服务器没有接收到数据！");
-            }
-            if (flag) {
-                System.out.println("添加设备成功！");
-            } else {
-                System.out.println("添加设备失败！");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -78,7 +72,7 @@ public class HttpUtils {
         } else if (className.equals("com.ex.qi.servlet.AddEquipmentInfoServlet")) {
             InfoList infos = gson.fromJson(str, InfoList.class);
             EquipmentInfoDaoImpl dao = new EquipmentInfoDaoImpl();
-            List<EquipmentInfo> list = infos.getInfos();
+            EquipmentInfo[] list = infos.getInfos();
             for (EquipmentInfo info : list) {
                 if (!dao.isExists(info.getfId(), info.getRoute())) {
                     flag = dao.addEquipmentInfo(info);
@@ -96,7 +90,6 @@ public class HttpUtils {
             flag = dao.deleteEquipmentInfos(str);
             printLog(flag, str);
         }
-
         return flag;
     }
 
@@ -115,7 +108,7 @@ public class HttpUtils {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-        logUtils.writeLog("equipment.txt", sb);
+        logUtils.writeLog("delete_equipment_log.txt", sb);
     }
 
     private void printLog(boolean flag, EquipmentInfo info) {
@@ -149,7 +142,7 @@ public class HttpUtils {
             e.printStackTrace();
         }
         sb.append(LogUtils.CRLF);
-        logUtils.writeLog("info.txt", sb);
+        logUtils.writeLog("add_info_log.txt", sb);
     }
 
     private void printLog(boolean flag, Equipment equipment) {
@@ -189,6 +182,6 @@ public class HttpUtils {
         }
         sb.append(LogUtils.CRLF);
         LogUtils utils = new LogUtils();
-        utils.writeLog("equipment.log", sb);
+        utils.writeLog("add_equipment_log.log", sb);
     }
 }

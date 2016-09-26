@@ -1,27 +1,38 @@
 package test;
 
+import com.ex.qi.dao.daoImpl.EquipmentDaoImpl;
+import com.ex.qi.entity.Equipment;
+import com.ex.qi.entity.EquipmentInfo;
+import com.ex.qi.entity.InfoList;
+import com.google.gson.Gson;
+
 /**
  * Created by sunline on 2016/9/10.
  */
 public class TestData {
     public static void main(String[] args) {
-       /* byte[] bt = new byte[]{0,0,1,123};
-        String str= "";
-        for (int i = 0; i < bt.length; i++) {
-            str += Integer.toHexString(bt[i]);
+        String str  = "{\"mAddr\":\"03\",\"mDataBits\":\"8\",\"mDelay\":\"0\",\"mId\":\"AC201609260220084555978453047033\",\"mName\":\"ac01\",\"mParity\":\"0\",\"mPort\":\"COM3\",\"mRate\":\"9600\",\"mState\":\"1\",\"mStopBits\":\"1\",\"mTimeOut\":\"200\"}";
+        Equipment equipment = conver2Equipment(str);
+        EquipmentDaoImpl dao = new EquipmentDaoImpl();
+        boolean flag = dao.updateEquipment(equipment);
+        if (flag) {
+            System.out.println("添加设备成功！");
+        } else {
+            System.out.println("添加设备失败！");
         }
-        System.out.println(Integer.parseInt("17D",16)/10f);*/
-        for (int i = 0; i < 300; i++) {
-            System.out.print(i+" ");
+    }
+    public static void conver2EquipmentInfo(String str){
+        Gson gson = new Gson();
+        InfoList obj = gson.fromJson(str, InfoList.class);
+        EquipmentInfo[] infos = obj.getInfos();
+        for (EquipmentInfo info : infos) {
+            System.out.println(info.getId());
         }
-        System.out.println();
-        for (int i = 0; i < 300; i++) {
-            byte b = (byte) i;
-            if (b<0){
-                System.out.print((b + 256) + " ");
-            }else
-                System.out.print(b+" ");
-
-        }
+    }
+    public static Equipment conver2Equipment(String str){
+        Gson gson = new Gson();
+        Equipment obj = gson.fromJson(str, Equipment.class);
+        System.out.println(obj.getId());
+        return obj;
     }
 }
