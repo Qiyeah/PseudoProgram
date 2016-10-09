@@ -1,13 +1,11 @@
 package com.ex.qi.servlet;
 
-import com.ex.qi.entity.Equipment;
 import com.ex.qi.entity.PUE;
 import com.ex.qi.utils.LogUtils;
 import com.ex.qi.utils.PUEUtils;
 import com.google.gson.Gson;
 
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,12 +28,12 @@ public class QueryPueServlet extends HttpServlet {
         PUEUtils utils = new PUEUtils();
         Gson gson = new Gson();
         PUE pue = new PUE();
-        pue.setDayPue(utils.calculatePue(PUEUtils.DAY_PUE));
-        pue.setMonthPue(utils.calculatePue(PUEUtils.MONTH_PUE));
-        pue.setYearPue(utils.calculatePue(PUEUtils.YEAR_PUE));
-        pue.setPastDayPue(utils.calculatePue(PUEUtils.ACCUMDAY_PUE));
-        pue.setPastMonthPue(utils.calculatePue(PUEUtils.ACCUMMONTH_PUE));
-        pue.setPastYearPue(utils.calculatePue(PUEUtils.ACCUMYEAR_PUE));
+        pue.setDayPue(utils.calculatePue(PUEUtils.TABLE_DAYKWH));
+        pue.setMonthPue(utils.calculatePue(PUEUtils.TABLE_MONTHKWH));
+        pue.setYearPue(utils.calculatePue(PUEUtils.TABLE_YEARKWH));
+        pue.setPastDayPue(utils.calculatePue(PUEUtils.TABLE_ACCDAYKWH));
+        pue.setPastMonthPue(utils.calculatePue(PUEUtils.TABLE_ACCMONKWH));
+        pue.setPastYearPue(utils.calculatePue(PUEUtils.TABLE_ACCYEARKWH));
         String json = gson.toJson(pue,PUE.class);
         PrintWriter out = resp.getWriter();
         boolean flag = null != json && !json.equals("");

@@ -11,7 +11,7 @@ import java.sql.SQLException;
  */
 public interface EquipmentDao {
     //name,port,rate,addr,switch,delay
-    boolean addEquipment(Equipment equipment) throws SQLException;
-    ResultSet findEquipment(String id) throws SQLException;
-    ResultSet findAllEquipments() throws SQLException;
+    boolean addEquipment(Equipment equipment);
+    Equipment findEquipment(String id);
+    Equipment[] findAllEquipments();
 }

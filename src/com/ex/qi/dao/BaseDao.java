@@ -9,7 +9,7 @@ import java.sql.SQLException;
 public interface BaseDao {
 
 
-    ResultSet query(String sql, Object... obj) throws SQLException;
+    ResultSet query(String sql, Object... obj);
 
     boolean update(String sql, Object... obj) throws SQLException;
 

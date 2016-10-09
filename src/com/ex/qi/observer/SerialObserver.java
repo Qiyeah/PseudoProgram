@@ -27,16 +27,4 @@ public class SerialObserver implements Observer {
 
     }
 
-    /*public float[] getDegrees() {
-        String temp = "";
-        float[] degrees = new float[(data.size()-5)/4];
-        for (int i = 3; i < data.size() -2; i++) {
-            temp += data.get(i);
-            if ((i - 2)%4 == 0){
-                degrees[(i-3)/4] = Integer.parseInt(temp,16)/10f;
-                temp = "";
-            }
-        }
-        return degrees;
-    }*/
 }

@@ -1,4 +1,4 @@
-CREATE TABLE Device (
+CREATE TABLE Equipment (
 
 id CHAR(32) NOT NULL,
 
@@ -12,17 +12,17 @@ addr CHAR(3) NOT NULL,
 
 timeout CHAR(6) NOT NULL,
 
-data CHAR(2) NOT NULL 8,
+data CHAR(2) NOT NULL DEFAULT '8',
 
-stop CHAR(2) NOT NULL 1,
+stop CHAR(2) NOT NULL DEFAULT '1',
 
-parity CHAR(2) NOT NULL 0,
+parity CHAR(2) NOT NULL DEFAULT '0',
 
-switch CHAR(1) NOT NULL 1,
+switch CHAR(1) NOT NULL DEFAULT '1',
 
-delayed CHAR(1) NOT NULL 1,
+delayed CHAR(1) NOT NULL DEFAULT '1',
 
-dt TIMESTAMP NOT NULL getdate(),
+dt DATE NOT NULL DEFAULT getdate(),
 
 PRIMARY KEY (id) 
 
@@ -30,7 +30,7 @@ PRIMARY KEY (id)
 
 
 
-CREATE TABLE DeviceInfo (
+CREATE TABLE EquipmentInfo (
 
 id CHAR(32) NOT NULL,
 
@@ -42,23 +42,23 @@ fk CHAR(32) NULL,
 
 it_symbol SMALLINT NULL,
 
-it_per SMALLINT NULL 100,
+it_per SMALLINT NULL DEFAULT 100,
 
 total_symbol SMALLINT NULL,
 
 total_per CHARACTER VARYING(255) NULL,
 
-dt TIMESTAMP NULL getdate(),
+dt date NULL DEFAULT getdate(),
 
 PRIMARY KEY (id) 
 
 );
 
-
+DROP TABLE RealKwh;
 
 CREATE TABLE RealKwh (
 
-_id CHAR(32) NOT NULL,
+id CHAR(32) NOT NULL,
 
 fk CHAR(32) NULL,
 
@@ -66,17 +66,17 @@ route SMALLINT NULL,
 
 degree  REAL NULL,
 
-dt TIMESTAMP NULL getdate(),
+dt date NULL DEFAULT getdate(),
 
-PRIMARY KEY (_id) 
+PRIMARY KEY (id) 
 
 );
 
-
+DROP TABLE DayKwh;
 
 CREATE TABLE DayKwh (
 
-_id CHAR(32) NOT NULL,
+id CHAR(32) NOT NULL,
 
 fk CHAR(32) NULL,
 
@@ -86,9 +86,9 @@ degree  REAL  NULL,
 
 point SMALLINT NULL,
 
-dt DATE NULL getdate(),
+dt DATE NULL DEFAULT getdate(),
 
-PRIMARY KEY (_id) 
+PRIMARY KEY (id) 
 
 );
 
@@ -96,7 +96,7 @@ PRIMARY KEY (_id)
 
 CREATE TABLE YearKwh (
 
-_id CHAR(32) NOT NULL,
+id CHAR(32) NOT NULL,
 
 fk CHAR(32) NULL,
 
@@ -106,9 +106,9 @@ degree  REAL  NULL,
 
 point SMALLINT NULL,
 
-dt DATE NULL getdate(),
+dt DATE NULL DEFAULT getdate(),
 
-PRIMARY KEY (_id) 
+PRIMARY KEY (id) 
 
 );
 
@@ -116,7 +116,7 @@ PRIMARY KEY (_id)
 
 CREATE TABLE AccumDayKwh (
 
-_id CHAR(32) NOT NULL,
+id CHAR(32) NOT NULL,
 
 fk CHAR(32) NULL,
 
@@ -128,9 +128,9 @@ point SMALLINT NULL,
 
 num SMALLINT NULL,
 
-dt TIME NULL getdate(),
+dt TIME NULL DEFAULT getdate(),
 
-PRIMARY KEY (_id) 
+PRIMARY KEY (id) 
 
 );
 
@@ -138,7 +138,7 @@ PRIMARY KEY (_id)
 
 CREATE TABLE AccumYearKwh (
 
-_id CHAR(32) NOT NULL,
+id CHAR(32) NOT NULL,
 
 fk CHAR(32) NULL,
 
@@ -150,9 +150,9 @@ point SMALLINT NULL,
 
 num SMALLINT NULL,
 
-dt DATE NULL getdate(),
+dt DATE NULL DEFAULT getdate(),
 
-PRIMARY KEY (_id) 
+PRIMARY KEY (id) 
 
 );
 
@@ -160,7 +160,7 @@ PRIMARY KEY (_id)
 
 CREATE TABLE AccumMonthKwh (
 
-_id CHAR(32) NOT NULL,
+id CHAR(32) NOT NULL,
 
 fk CHAR(32) NULL,
 
@@ -172,9 +172,9 @@ point SMALLINT NULL,
 
 num SMALLINT NULL,
 
-dt DATE NULL getdate(),
+dt DATE NULL DEFAULT getdate(),
 
-PRIMARY KEY (_id) 
+PRIMARY KEY (id) 
 
 );
 
@@ -182,7 +182,7 @@ PRIMARY KEY (_id)
 
 CREATE TABLE MonthKwh (
 
-_id CHAR(32) NOT NULL,
+id CHAR(32) NOT NULL,
 
 fk CHAR(32) NULL,
 
@@ -192,9 +192,9 @@ degree  REAL  NULL,
 
 point SMALLINT NULL,
 
-dt TIME NULL getdate(),
+dt TIME NULL DEFAULT getdate(),
 
-PRIMARY KEY (_id) 
+PRIMARY KEY (id ) 
 
 );
 
@@ -202,21 +202,21 @@ PRIMARY KEY (_id)
 
 
 
-ALTER TABLE DeviceInfo ADD CONSTRAINT device_config_id FOREIGN KEY (fk) REFERENCES Device (id);
+ALTER TABLE EquipmentInfo ADD CONSTRAINT Equipment_config_id FOREIGN KEY (fk) REFERENCES Equipment (id);
 
-ALTER TABLE RealKwh ADD CONSTRAINT real_device_id FOREIGN KEY (fk) REFERENCES Device (id);
+ALTER TABLE RealKwh ADD CONSTRAINT real_Equipment_id FOREIGN KEY (fk) REFERENCES Equipment (id);
 
-ALTER TABLE YearKwh ADD CONSTRAINT year_device_id FOREIGN KEY (fk) REFERENCES Device (id);
+ALTER TABLE YearKwh ADD CONSTRAINT year_Equipment_id FOREIGN KEY (fk) REFERENCES Equipment (id);
 
-ALTER TABLE DayKwh ADD CONSTRAINT day_device_id FOREIGN KEY (fk) REFERENCES Device (id);
+ALTER TABLE DayKwh ADD CONSTRAINT day_Equipment_id FOREIGN KEY (fk) REFERENCES Equipment (id);
 
-ALTER TABLE AccumDayKwh ADD CONSTRAINT accumday_device_id FOREIGN KEY (fk) REFERENCES Device (id);
+ALTER TABLE AccumDayKwh ADD CONSTRAINT accumday_Equipment_id FOREIGN KEY (fk) REFERENCES Equipment (id);
 
-ALTER TABLE AccumYearKwh ADD CONSTRAINT accumyear_device_id FOREIGN KEY (fk) REFERENCES Device (id);
+ALTER TABLE AccumYearKwh ADD CONSTRAINT accumyear_Equipment_id FOREIGN KEY (fk) REFERENCES Equipment (id);
 
-ALTER TABLE AccumMonthKwh ADD CONSTRAINT acmonth_device_id FOREIGN KEY (fk) REFERENCES Device (id);
+ALTER TABLE AccumMonthKwh ADD CONSTRAINT acmonth_Equipment_id FOREIGN KEY (fk) REFERENCES Equipment (id);
 
-ALTER TABLE MonthKwh ADD CONSTRAINT month_device_id FOREIGN KEY (fk) REFERENCES Device (id);
+ALTER TABLE MonthKwh ADD CONSTRAINT month_Equipment_id FOREIGN KEY (fk) REFERENCES Equipment (id);
 
 
 

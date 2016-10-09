@@ -168,6 +168,7 @@ public class AC {
         for (int i = 0; i < bytes.length; i++) {
             sum += bytes[i];
         }
+
         String check = Long.toHexString((~sum % 65536 + 1) & 0xFFFF).toUpperCase();
         byte[] checksum = new byte[check.length()];
         for (int i = 0; i < check.length(); i++) {

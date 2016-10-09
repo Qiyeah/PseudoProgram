@@ -11,7 +11,7 @@ import java.util.List;
 public interface EquipmentInfoDao {
     boolean addEquipmentInfo(EquipmentInfo equipmentInfo);
     boolean updateEquipmentInfo(EquipmentInfo equipmentInfo);
-    boolean deleteEquipmentInfos(String fId) throws SQLException;
+    boolean deleteEquipmentInfos(String fId);
     int getRoutes(String id);
-    List<EquipmentInfo> findEquipmentInfos(String foreign);
+    EquipmentInfo[] findEquipmentInfos(String foreign);
 }

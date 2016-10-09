@@ -91,9 +91,9 @@ public class AccumKwhDao extends BaseKwhDao {
         }
         return kwh;
     }
-    public int findLastNum(String table,String foreign,int route){
-        String sql = "select top 1 num from "+table+" where fk = ? and route = ? order by num desc ";
-        ResultSet result = query(sql, new Object[]{foreign, route});
+    public int findLastNum(String table,String foreign){
+        String sql = "select top 1 num from "+table+" where fk = ? order by num desc ";
+        ResultSet result = query(sql, new Object[]{foreign});
         try {
             if (result.next()) {
                 return result.getInt("num");

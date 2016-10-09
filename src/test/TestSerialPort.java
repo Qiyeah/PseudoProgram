@@ -31,12 +31,12 @@ public class TestSerialPort {
         System.out.println();*/
 
         DeviceUtils deviceUtils = new DeviceUtils();
-        List<Equipment> list = deviceUtils.loadDevice();
+        Equipment[] equipments = deviceUtils.loadDevice();
 
-        for (int i = 0; i < list.size(); i++) {
+        for (int i = 0; i < equipments.length; i++) {
             float[] degrres = new float[0];
             SerialPortUtils utils = new SerialPortUtils();
-            Equipment equipment = list.get(i);
+            Equipment equipment = equipments[i];
             String id = equipment.getId();
             Map<String, Comparable> params = deviceUtils.parseToParams(equipment);
             utils.open(params);

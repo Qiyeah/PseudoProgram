@@ -69,7 +69,7 @@ public class EquipmentInfoDaoImpl extends BaseDaoImpl implements EquipmentInfoDa
         return 0;
     }
 
-    public List<EquipmentInfo> findEquipmentInfos(String foreign){
+    public EquipmentInfo[] findEquipmentInfos(String foreign){
         List<EquipmentInfo> list = new ArrayList<>();
         String sql = "select id,fk,name,route,total_symbol,total_per,it_symbol,it_per from EQUIPMENTINFO where fk = ?";
         ResultSet set = query(sql,foreign);
@@ -88,7 +88,7 @@ public class EquipmentInfoDaoImpl extends BaseDaoImpl implements EquipmentInfoDa
         } catch (SQLException e) {
             //e.printStackTrace();
         }
-        return list;
+        return list.toArray(new EquipmentInfo[0]);
     }
     public boolean isExists(String foreign,int route){
         String sql = "select count(route) as num from EQUIPMENTINFO where fk = ? and route = ? ";

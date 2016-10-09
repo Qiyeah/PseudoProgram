@@ -3,6 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
          version="3.1">
+
     <servlet>
         <servlet-name>AddEquipmentServlet</servlet-name>
         <servlet-class>com.ex.qi.servlet.AddEquipmentServlet</servlet-class>
@@ -17,7 +18,15 @@
     </servlet>
     <servlet>
         <servlet-name>DeleteEquipmentInfoServlet</servlet-name>
-        <servlet-class>com.ex.qi.servlet.DeleteEquipmentServlet</servlet-class>
+        <servlet-class>com.ex.qi.servlet.DeleteEquipmentInfoServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>CollectDataServlet</servlet-name>
+        <servlet-class>com.ex.qi.servlet.CollectDataServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>PUEServlet</servlet-name>
+        <servlet-class>com.ex.qi.servlet.PUEServlet</servlet-class>
     </servlet>
 
 
@@ -37,4 +46,13 @@
         <servlet-name>DeleteEquipmentInfoServlet</servlet-name>
         <url-pattern>/DeleteEquipmentInfoServlet</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>CollectDataServlet</servlet-name>
+        <url-pattern>/CollectDataServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>PUEServlet</servlet-name>
+        <url-pattern>/PUEServlet</url-pattern>
+    </servlet-mapping>
+
 </web-app>

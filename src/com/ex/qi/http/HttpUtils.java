@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.sql.Date;
 import java.util.List;
 
@@ -35,7 +36,7 @@ public class HttpUtils {
             int len = 0;
             String str = "";
             while (-1 != (len = is.read(buf))) {
-                str += new String(buf, 0, len);
+                str += new String(buf, 0, len,"gbk");
             }
             if (null != str && !"".equals(str)) {
                 System.out.println("从Android客户端接收到的数据：\n" + str+"\n");
@@ -60,10 +61,12 @@ public class HttpUtils {
         boolean flag = false;
         Gson gson = new Gson();
         if (className.equals("com.ex.qi.servlet.AddEquipmentServlet")) {
+
             Equipment equipment = gson.fromJson(str, Equipment.class);
+            String equipmentId = equipment.getId();
             equipment.setDate(new Date(System.currentTimeMillis()));
             EquipmentDaoImpl dao = new EquipmentDaoImpl();
-            if (!dao.isExsits(equipment.getId())) {
+            if (!dao.isExsits(equipmentId)) {
                 flag = dao.addEquipment(equipment);
             } else {
                 flag = dao.updateEquipment(equipment);
@@ -83,9 +86,11 @@ public class HttpUtils {
             }
         } else if (className.equals("com.ex.qi.servlet.DeleteEquipmentServlet")) {
             EquipmentDaoImpl dao = new EquipmentDaoImpl();
+            System.out.println("删除设备信息");
             flag = dao.deleteEquipment(str);
             printLog(flag, str);
         } else if (className.equals("com.ex.qi.servlet.DeleteEquipmentInfoServlet")) {
+            System.out.println("删除通道信息");
             EquipmentInfoDaoImpl dao = new EquipmentInfoDaoImpl();
             flag = dao.deleteEquipmentInfos(str);
             printLog(flag, str);

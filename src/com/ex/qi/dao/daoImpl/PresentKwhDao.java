@@ -26,6 +26,7 @@ public class PresentKwhDao extends BaseKwhDao {
     public boolean updateDataAtPoint(String table, float degree, String foreign, int route,int lastPoint,int currentPoint,int num) {
         String sql = "update  "+table+" set degree = ?,point = ?,dt = ? where fk = ? and route = ? and point = ? and num = ? ";
         try {
+           //  System.out.println("时间："+System.currentTimeMillis());
             return update(sql, new Object[]{degree,currentPoint,new Date(System.currentTimeMillis()), foreign, route,lastPoint,num});
         } catch (SQLException e) {
             //e.printStackTrace();
@@ -52,7 +53,7 @@ public class PresentKwhDao extends BaseKwhDao {
 
 
     @Override
-    public int findLastNum(String table, String foreign, int route) {
+    public int findLastNum(String table, String foreign) {
         return 1;
     }
 

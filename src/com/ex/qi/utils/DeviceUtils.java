@@ -26,28 +26,10 @@ public class DeviceUtils {
      * 查询数据库，加载所有已知的设备信息
      * @return
      */
-    public List<Equipment> loadDevice() {
-        ResultSet mResultSet;
-        mResultSet = new EquipmentDaoImpl().findAllEquipments();
-        List<Equipment> equipments = new ArrayList<Equipment>();
-        try {
-            while (mResultSet.next()) {
-                String id = mResultSet.getString("id").trim();
-                String name = mResultSet.getString("name").trim();
-                String port = mResultSet.getString("port").trim();
-                String rate = mResultSet.getString("rate").trim();
-                String addr = mResultSet.getString("addr").trim();
-                String timeout = mResultSet.getString("timeout").trim();
-                String data = mResultSet.getString("data").trim();
-                String stop = mResultSet.getString("stop").trim();
-                String parity = mResultSet.getString("parity").trim();
-                String state = mResultSet.getString("switch").trim();
-                String delay = mResultSet.getString("delayed").trim();
-                equipments.add(new Equipment(id, name, port, rate, addr, timeout, data, stop, parity, state, delay));
-            }
-        } catch (SQLException e) {
-            //e.printStackTrace();
-        }
+    public Equipment[] loadDevice() {
+
+        Equipment[] equipments = new EquipmentDaoImpl().findAllEquipments();
+
         return equipments;
     }
 

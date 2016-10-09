@@ -10,8 +10,8 @@ import java.util.Date;
 public class LogUtils {
     public static final String CRLF = "\r\n";
 
-    public static final String SPLIT1 = "-------------------------------------------------------------------日志开始标签-------------------------------------------------------------------";
-    public static final String SPLIT2 = "-------------------------------------------------------------------";
+    public static final String SPLIT1 = "--------------------------------------------------------日志开始标签--------------------------------------------------------";
+    public static final String SPLIT2 = "------------------------------------------------------------------";
     public static final String SPLIT3 = "********************************************************日志结束标签********************************************************";
     public static final String separator = File.separator;
     public static File file = null;
@@ -57,7 +57,7 @@ public class LogUtils {
         return sdf.format(date);
     }
 
-    public static void openIO(String fileName) {
+    private void openIO(String fileName) {
         try {
             File file = new File("e:"+separator+"PseudoProgram"+separator+"log"+separator+fileName);
             if (!file.exists()) {
@@ -76,7 +76,7 @@ public class LogUtils {
         }
     }
 
-    public static void closeIO() {
+    private void closeIO() {
         try {
             if (null != file) {
                 file = null;

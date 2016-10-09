@@ -100,20 +100,35 @@ public abstract class SerialReader extends Observable implements SerialPortEvent
                 outputStream.write(message);
                 System.out.println("发送的命令：");
                 for (byte b : message) {
-                    System.out.println(b + " ");
+                    System.out.print(b + " ");
                 }
+                System.out.println();
                /* sb.append(CRLF);
                 sb.append(CRLF);*/
                 outputStream.flush();
                 //TODO 数据回转时间
                 Thread.sleep(100 * delay);
                 //sb.append("传递到电度解析的数据:");
-                System.out.println("传递到电度解析的数据:");
-                for (int i : data) {
-                    System.out.println(i + " ");
+                if (null != data && 0 != data.length){
+                    System.out.println("传递到电度解析的数据:");
+                    for (int i : data) {
+                        System.out.print(i + " ");
+                    }
+                    System.out.println();
+                    //sb.append(CRLF);
+                    CheckData cd =new CheckData();
+                    if (cd.checkData(data)){
+                        transformData(data);
+                        data =new int[0];
+                    }else{
+                        data =new int[0];
+                        run(message,delay);
+                    }
+                }else {
+                    System.out.println("通信故障！正在尝试重新连接...");
+                    data =new int[0];
+                    run(message,delay);
                 }
-                //sb.append(CRLF);
-                transformData(data);
 
             }
         } catch (IOException e) {
@@ -171,7 +186,7 @@ public abstract class SerialReader extends Observable implements SerialPortEvent
     // 将buffer中的空字节删除后再发送更新消息,通知观察者
     public void onDataReceived(byte[] source, int length) {
         byte[] temp = Arrays.copyOfRange(source, 0, length);
-        System.out.print("收到的数据：" + length + "个");
+        /*System.out.print("收到的数据：" + length + "个");
         for (byte b : temp) {
             if (b<0){
                 System.out.print((b+256)+" ");
@@ -179,7 +194,7 @@ public abstract class SerialReader extends Observable implements SerialPortEvent
             else
                 System.out.print(b+" ");
         }
-        System.out.println();
+        System.out.println();*/
         data = copyArray(data, temp);
        /* System.out.println();
         System.out.print("拼接过程：");

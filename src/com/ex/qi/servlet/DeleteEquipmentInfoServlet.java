@@ -20,6 +20,7 @@ public class DeleteEquipmentInfoServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String className = getClass().getName();
+        System.out.println(className);
         new HttpUtils().handlerAndroidRequest(className, req);
     }
 }

@@ -11,6 +11,7 @@ import com.ex.qi.utils.DeviceUtils;
 import com.ex.qi.utils.IDUtils;
 import com.ex.qi.utils.SerialPortUtils;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -30,12 +31,12 @@ public class TestAddDataToDatabase {
     public static final int DC_TIMEOUT = 1;
     public static SerialPortUtils portUtils = new SerialPortUtils();//操作串口的工具类
     public static DeviceUtils deviceUtils = new DeviceUtils();//操作设备的工具类
-    public static List<Equipment> equipments = deviceUtils.loadDevice();//加载所有配置好的设备
+    public static Equipment[] equipments;//加载所有配置好的设备
     public static Map<String, Comparable> params = null;//用来设置设备的通信参数
     public static SerialPortUtils mSerialPortUtils = new SerialPortUtils();
 
     public static void main(String[] args) {
-        for (int i = 1; i < 5; i++) {
+        for (int i = 1; i < 30000; i++) {
          /*   System.out.println();
             System.out.println("采集程序第 【 " + i + " 】次运行");
             System.out.println(SPLIT1);*/
@@ -46,7 +47,10 @@ public class TestAddDataToDatabase {
             sb.append(CRLF);
             sb.append(SPLIT1);
             sb.append(CRLF);
+            equipments = deviceUtils.loadDevice();
+
             addDataToDatabase();
+
 //            mSerialPortUtils.writeLog(sb);
         }
 
@@ -59,10 +63,11 @@ public class TestAddDataToDatabase {
         long start = System.currentTimeMillis();
         /*----------------------------------------------------------------*/
 
-        int deviceSize = equipments.size();//设备数量
+        int deviceSize = equipments.length;//设备数量
+      //  System.out.println("数量"+deviceSize);
         if (null != equipments && 0 < deviceSize) {//判断是否已经配置设备
             for (int i = 0; i < deviceSize; i++) {//遍历所有设备
-                Equipment equipment = equipments.get(i);//得到设备实体
+                Equipment equipment = equipments[i];//得到设备实体
                 String id = equipment.getId();//当前操作的设备ID
                 byte[] cmd = deviceUtils.generateCommandsViaDevice(equipment);
                 params = deviceUtils.parseToParams(equipment);//解析设备的通信参数、
@@ -75,11 +80,11 @@ public class TestAddDataToDatabase {
                 if (id.startsWith("AC")) {//判断为多路表
                     System.out.println(id);
                     portUtils.sendMessage(cmd, AC_TIMEOUT);
-                   /* if (flag) {
+                    if (flag) {
                         float[] degrees = portUtils.parseACDegrees();//把数据解析成电度数值
                         addData2Database(id, degrees);
-//                        System.out.println("\n-***************************************************-");
-                    }*/
+                     // System.out.println("\n-***************************************************-");
+                    }
                 } else
                 if (id.startsWith("DC")) {//判断为直流电间
                     portUtils.sendMessage(cmd, DC_TIMEOUT);
@@ -89,7 +94,7 @@ public class TestAddDataToDatabase {
                     if (flag) {
                         float[] degrees = portUtils.parseDCDegrees();//把数据解析成电度数值
                         if (null != degrees && 0 != degrees.length) {
-                            //addData2Database(id, degrees);
+                            addData2Database(id, degrees);
                         }
 //                        System.out.println("\n-***************************************************-");
                     }
@@ -201,6 +206,7 @@ public class TestAddDataToDatabase {
 
 
     private static void updatePresentKwh(String table, String fk, float curDegree, int route) {
+        Calendar calendar =Calendar.getInstance();
         PresentKwhDao dao = new PresentKwhDao();
         int curHour = DateUtils.getHours();
         int curPoint = DateUtils.getDay();
@@ -219,12 +225,24 @@ public class TestAddDataToDatabase {
         int routes = dao.findTotalByRoute(table, fk, route);
         latestDegree = curDegree - latestDegree > 1 ? curDegree : latestDegree - curDegree > 1 ? latestDegree + curDegree : curDegree;
         if (0 != routes) {//判断数据库中有记录
-            //System.out.println(" --if->> routes = "+routes);
-          /*  System.out.println(" -- if (0 != routes)->> curHour = "+curHour);
-            System.out.println(" -- if (0 != routes)->> updatePoint = "+curPoint);
-            System.out.println(" -- if (0 != routes)->> lastPoint = "+lastPoint);*/
-            if (0 == curHour && curPoint > lastPoint) {//时间为0点，天数已经过去一天
-                dao.updateDataAtPoint(table, latestDegree, fk, route, lastPoint, curPoint, 0);//更新0点的数据
+//            System.out.println(" --if->> routes = "+routes);
+//           System.out.println(" -- if (0 != routes)->> curHour = "+curHour);
+//            System.out.println(" -- if (0 != routes)->> updatePoint = "+curPoint);
+//            System.out.println(" -- if (0 != routes)->> lastPoint = "+lastPoint);
+            if ((0 == curHour && (curPoint > lastPoint))||(0 == curHour && (curPoint==1)) ) {//时间为0点，天数已经过去一天
+                System.out.println("月天"+calendar.get(Calendar.DAY_OF_MONTH));
+                System.out.println("年天"+calendar.get(Calendar.DAY_OF_YEAR));
+                System.out.println(table.equalsIgnoreCase(PresentKwhDao.KWH_DAY));
+                if(table.equalsIgnoreCase(PresentKwhDao.KWH_MONTH)&&(calendar.get(Calendar.DAY_OF_MONTH)==1)){
+                    dao.updateDataAtPoint(table, latestDegree, fk, route, lastPoint, curPoint, 0);
+                  //  System.out.println("月表更新：" + dao.updateDataAtPoint(table, latestDegree, fk, route, lastPoint, curPoint, 0));
+                }else if (table.equalsIgnoreCase(PresentKwhDao.KWH_YEAR)&&(calendar.get(Calendar.DAY_OF_YEAR)==1)){
+                    dao.updateDataAtPoint(table, latestDegree, fk, route, lastPoint, curPoint, 0);
+                   // System.out.println("年表更新：" + dao.updateDataAtPoint(table, latestDegree, fk, route, lastPoint, curPoint, 0));
+                }else if (table.equalsIgnoreCase(PresentKwhDao.KWH_DAY)){
+                    dao.updateDataAtPoint(table, latestDegree, fk, route, lastPoint, curPoint, 0);
+                   // System.out.println("日表更新：" + dao.updateDataAtPoint(table, latestDegree, fk, route, lastPoint, curPoint, 0));
+                }
             }
             dao.updateDataAtPoint(table, latestDegree, fk, route, lastPoint, curPoint, 1);
         } else {//判断数据库中没有记录
