@@ -36,7 +36,7 @@ public class HttpUtils {
             int len = 0;
             String str = "";
             while (-1 != (len = is.read(buf))) {
-                str += new String(buf, 0, len,"gbk");
+                str += new String(buf, 0, len,"utf-8");
             }
             if (null != str && !"".equals(str)) {
                 System.out.println("从Android客户端接收到的数据：\n" + str+"\n");
