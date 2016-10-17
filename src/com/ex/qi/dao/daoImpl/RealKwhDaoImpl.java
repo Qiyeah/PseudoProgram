@@ -11,8 +11,10 @@ import java.sql.SQLException;
  * Created by sunline on 2016/8/25.
  */
 public class RealKwhDaoImpl extends BaseDaoImpl implements RealKwhDao {
+    int count = 0 ;
     @Override
     public boolean addRealDegree( RealKwh realKwh){
+
         String sql = "insert into RealKwh (id,fk,route,degree) values(?,?,?,?)";
         Object[] objs = new Object[]{realKwh.getId(), realKwh.getfId(), realKwh.getRoute(), realKwh.getDegree()};
         try {

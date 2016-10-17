@@ -8,7 +8,7 @@ import java.sql.*;
  */
 public class DBUtils {
     String driver = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-    String url = "jdbc:sqlserver://localhost:1433;databaseName=test";
+    String url = "jdbc:sqlserver://192.168.1.180:1433;databaseName=test";
     String user = "sa";
     String pass = "tiger";
     String orclUrl = "jdbc:oracle:thin:@//localhost:1521/orcl";

@@ -22,12 +22,11 @@ public class PUEServlet extends HttpServlet {
         PUE pue = utils.getPUE();
         Gson gson = new Gson();
         String json = gson.toJson( pue,PUE.class);
+        //System.out.println("发送到安卓："+json);
         out.append(json);
         out.flush();
         out.close();
-        out = null;
-        utils = null;
-        pue = null;
+
     }
 
     @Override

@@ -35,18 +35,23 @@ public class PresentKwhDao extends BaseKwhDao {
         return false;
     }
     public float getDegreeByNum(String table, String foreign, int route, int num) {
+        //long start = System.currentTimeMillis();
         String sql = "select degree from  "+table+"  where fk = ? and route = ? and num = ? ";
         ResultSet resultSet = query(sql, new Object[]{foreign, route, num});
         try {
-            while (resultSet.next()) {
-                float degree = resultSet.getFloat("degree");
-                if (0 != degree) {
-                    return degree;
-                }
-            }
+           if ( null  != resultSet){
+               while (resultSet.next()) {
+                   float degree = resultSet.getFloat("degree");
+                   if (0 != degree) {
+                       return degree;
+                   }
+               }
+           }
         } catch (SQLException e) {
             //e.printStackTrace();
         }
+        //long end = System.currentTimeMillis() - start;
+       // System.out.println("耗时："+end);
         return 0f;
     }
 
@@ -75,19 +80,22 @@ public class PresentKwhDao extends BaseKwhDao {
 
     public PresentKwh findInfoByNum(String table, String foreign, int route) {
         PresentKwh kwh = new PresentKwh();
+
         String sql = "select top 1 degree,point,num from "+table+" where fk = ? and route = ? order by num desc ";
         ResultSet result = query(sql, new Object[]{foreign, route});
         try {
-            if (result.next()) {
-                float degree = result.getFloat("degree");
-                int point= result.getInt("point");
-                int num = result.getInt("num");
-                kwh.setDegree(degree);
-                kwh.setPoint(point);
-                kwh.setNum(num);
+            if (null != result){
+                if (result.next()) {
+                    float degree = result.getFloat("degree");
+                    int point= result.getInt("point");
+                    int num = result.getInt("num");
+                    kwh.setDegree(degree);
+                    kwh.setPoint(point);
+                    kwh.setNum(num);
+                }
             }
         } catch (SQLException e) {
-
+            e.printStackTrace();
         }
         return kwh;
     }

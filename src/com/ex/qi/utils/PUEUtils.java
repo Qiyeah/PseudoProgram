@@ -11,6 +11,7 @@ import com.ex.qi.entity.Equipment;
 import com.ex.qi.entity.EquipmentInfo;
 import com.ex.qi.entity.PUE;
 
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -92,6 +93,7 @@ public class PUEUtils {
         Iterator<Map.Entry<String, EquipmentInfo[]>> it = entrySet.iterator();
 
         while (it.hasNext()) {
+
             Map.Entry<String, EquipmentInfo[]> entry = it.next();
 
             String key = entry.getKey();
@@ -105,39 +107,16 @@ public class PUEUtils {
                     startNum = stopNum - 364;
                 }
             }
-
-//            System.out.println("key = " + key);
-//
-//            System.out.println("**********************************************************");
-
             EquipmentInfo[] infos = entry.getValue();
 
+            //System.out.println(infos.length);
             for (EquipmentInfo info : infos) {
-
-//                System.out.println(info.getId());
-//                System.out.println(info.getRoute());
-//                System.out.println(info.getRouteName());
-//                System.out.println(info.getTotalSymbol());
-//                System.out.println(info.getTotalPer());
-//                System.out.println(info.getITSymbol());
-//                System.out.println(info.getITPer());
-//                System.out.println("----------------------------------------------------------");
-
                 int totalSymbol = info.getTotalSymbol();
                 float totalPer = info.getTotalPer() / 100.0f;
                 int itSymbol = info.getITSymbol();
                 float itPer = info.getITPer() / 100.0f;
-
                 tempStart = dao.getDegreeByNum(table, key, info.getRoute(), startNum);
                 tempEnd = dao.getDegreeByNum(table, key,info.getRoute(), stopNum);
-               /* System.out.println("------------------------------------"+info.getRouteName()+"------------------------------------");
-                System.out.println("tempStart = "+tempStart);
-                System.out.println("tempEnd = "+tempEnd);
-                System.out.println();
-                System.out.println(" totalStart = "+totalSymbol+" * "+tempStart+" * "+totalPer+" = "+totalSymbol * tempStart * totalPer);
-                System.out.println(" totalEnd = "+totalSymbol+" * "+tempEnd+" * "+totalPer+" = "+totalSymbol * tempEnd * totalPer);
-                System.out.println(" ITStart = "+itSymbol+" * "+tempStart+" * "+itPer+" = "+itSymbol * tempStart * itPer);
-                System.out.println(" ITEnd = "+itSymbol+" * "+tempEnd+" * "+itPer+" = "+totalSymbol * tempEnd * itPer);*/
                 if (0 != totalPer){
                     totalStart += totalSymbol * tempStart * totalPer;
                     totalEnd += totalSymbol * tempEnd * totalPer;
@@ -147,30 +126,18 @@ public class PUEUtils {
                     ITEnd += itSymbol * tempEnd * itPer;
                 }
             }
-
-          /*  System.out.println("------------------------------------结果集------------------------------------");
-            System.out.println("totalStart = "+totalStart);
-            System.out.println("totalEnd = "+totalEnd);
-            System.out.println("ITStart = "+ITStart);
-            System.out.println("ITEnd = "+ITEnd);
-            System.out.println();*/
         }
-
-
         float pue = 0f;
-
         if (0 < (ITEnd - ITStart)) {
             pue = (totalEnd - totalStart) / (ITEnd - ITStart);
             if (pue > 3.5) {
-                //TODO 输出错误日志
-                //代码编写到这里
                 return 3.5f;
             } else if (pue < 1) {
-                //TODO 输出错误日志
-                //代码编写到这里
                 return 1f;
             }
         }
+        DecimalFormat df = new DecimalFormat("#.00");
+        pue = Float.valueOf(df.format(pue));
 
         return pue;
     }

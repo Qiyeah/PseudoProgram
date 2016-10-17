@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component name="dataSourceStorage">
-  <data-source name="SQL Server - test@localhost" uuid="57007cc4-2e9b-4982-882b-fc977c5f245e">
+  <data-source name="SQL Server - test@192.168.1.180" uuid="57007cc4-2e9b-4982-882b-fc977c5f245e">
     <database-info product="" version="" jdbc-version="" driver-name="" driver-version=""/>
   </data-source>
 </component>

@@ -43,7 +43,7 @@ public class QueryPueServlet extends HttpServlet {
             out.write("Failed to get data!");
         out.flush();
         out.close();
-        printLog(pue,flag);
+       // printLog(pue,flag);
     }
     private void printLog(PUE pue, boolean flag){
         StringBuffer sb = new StringBuffer();

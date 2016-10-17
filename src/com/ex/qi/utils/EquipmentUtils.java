@@ -16,7 +16,7 @@ import java.util.Map;
 /**
  * Created by sunline on 2016/8/24.
  */
-public class DeviceUtils {
+public class EquipmentUtils {
     private String dataBit = "" + SerialPort.DATABITS_8;
     private String stopBit = "" + SerialPort.STOPBITS_1;
     private int parityInt = SerialPort.PARITY_NONE;
@@ -41,12 +41,12 @@ public class DeviceUtils {
     public Map<String, Comparable> parseToParams(Equipment equipment) {
         HashMap<String, Comparable> params = new HashMap<String, Comparable>();
         params.put(SerialReader.PARAMS_PORT, equipment.getPort()); // 端口名称
-        params.put(SerialReader.PARAMS_RATE, Integer.valueOf(equipment.getRate())); // 波特率
-        params.put(SerialReader.PARAMS_DATABITS, Integer.valueOf(equipment.getDataBits())); // 数据位
-        params.put(SerialReader.PARAMS_STOPBITS, Integer.valueOf(equipment.getStopBits())); // 停止位
-        params.put(SerialReader.PARAMS_PARITY, Integer.valueOf(equipment.getParity())); // 无奇偶校验
-        params.put(SerialReader.PARAMS_TIMEOUT, Integer.valueOf(equipment.getTimeOut())); // 设备超时时间 1秒
-        params.put(SerialReader.PARAMS_DELAY, Integer.valueOf(equipment.getDelay())); // 端口数据准备时间 1秒
+        params.put(SerialReader.PARAMS_RATE, Integer.valueOf(equipment.getRate().trim())); // 波特率
+        params.put(SerialReader.PARAMS_DATABITS, Integer.valueOf(equipment.getDataBits().trim())); // 数据位
+        params.put(SerialReader.PARAMS_STOPBITS, Integer.valueOf(equipment.getStopBits().trim())); // 停止位
+        params.put(SerialReader.PARAMS_PARITY, Integer.valueOf(equipment.getParity().trim())); // 无奇偶校验
+        params.put(SerialReader.PARAMS_TIMEOUT, Integer.valueOf(equipment.getTimeOut().trim())); // 设备超时时间 1秒
+        params.put(SerialReader.PARAMS_DELAY, Integer.valueOf(equipment.getDelay().trim())); // 端口数据准备时间 1秒
         return params;
     }
 

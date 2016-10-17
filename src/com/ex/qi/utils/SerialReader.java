@@ -64,11 +64,11 @@ public abstract class SerialReader extends Observable implements SerialPortEvent
             int parity = Integer.parseInt(serialParams.get(PARAMS_PARITY).toString());
             delayRead = Integer.parseInt(serialParams.get(PARAMS_DELAY).toString());
             String port = serialParams.get(PARAMS_PORT).toString().trim();
-            System.out.println(port);
+//            System.out.println(port);
             try {
                 // 打开端口
                 portId = CommPortIdentifier.getPortIdentifier(port);
-                System.out.println(port);
+                //System.out.println(port);
                 serialPort = (SerialPort) portId.open("SerialReader", timeout);
                 inputStream = serialPort.getInputStream();
                 outputStream = serialPort.getOutputStream();
@@ -98,11 +98,11 @@ public abstract class SerialReader extends Observable implements SerialPortEvent
             if (message != null && message.length != 0) {
                 //TODO 发送指令
                 outputStream.write(message);
-                System.out.println("发送的命令：");
+              /*  System.out.println("发送的命令：");
                 for (byte b : message) {
                     System.out.print(b + " ");
                 }
-                System.out.println();
+                System.out.println();*/
                /* sb.append(CRLF);
                 sb.append(CRLF);*/
                 outputStream.flush();
@@ -110,11 +110,11 @@ public abstract class SerialReader extends Observable implements SerialPortEvent
                 Thread.sleep(100 * delay);
                 //sb.append("传递到电度解析的数据:");
                 if (null != data && 0 != data.length){
-                    System.out.println("传递到电度解析的数据:");
+                    /*System.out.println("传递到电度解析的数据:");
                     for (int i : data) {
                         System.out.print(i + " ");
                     }
-                    System.out.println();
+                    System.out.println();*/
                     //sb.append(CRLF);
                     CheckData cd =new CheckData();
                     if (cd.checkData(data)){

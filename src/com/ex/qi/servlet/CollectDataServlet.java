@@ -21,31 +21,33 @@ import java.util.concurrent.TimeUnit;
  * Created by sunline on 2016/8/24.
  */
 //@WebServlet(name = "collect", urlPatterns = "/CollectDataServlet")
-public class CollectDataServlet extends HttpServlet implements Runnable {
-    public static  String CRLF = "\r\n";
-    public static  String SPLIT1 = "------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------";
-    public static  String SPLIT2 = "------------------------------------------------------------------------------------------------------------------";
-    public static  String SPLIT3 = "****************************************************************************************************************************************************************************************************************************";
+public class CollectDataServlet extends HttpServlet {
+    public static String CRLF = "\r\n";
+    public static String SPLIT1 = "------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------";
+    public static String SPLIT2 = "------------------------------------------------------------------------------------------------------------------";
+    public static String SPLIT3 = "****************************************************************************************************************************************************************************************************************************";
 
     public static StringBuilder sb = SerialPortUtils.sb;
     public static SerialPortUtils portUtils = new SerialPortUtils();//操作串口的工具类
-    public static DeviceUtils deviceUtils = new DeviceUtils();//操作设备的工具类
+    public static EquipmentUtils equipmentUtils = new EquipmentUtils();//操作设备的工具类
     public static Equipment[] equipments;//加载所有配置好的设备
     public static Map<String, Comparable> params = null;//用来设置设备的通信参数
     public static SerialPortUtils mSerialPortUtils = new SerialPortUtils();
 
     public static final int AC_TIMEOUT = 30;
     public static final int DC_TIMEOUT = 1;
-    ScheduledExecutorService service = null;
+    public static ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();;
+
     @Override
     public void init() throws ServletException {
         super.init();
-        service = Executors
-                .newSingleThreadScheduledExecutor();
-                /*执行定时任务，第二个参数是首次执行任务的延时，第三个参数是执行定时任务的
-                 间隔时间，第四个参数是时间的类型
-                 */
-        service.scheduleAtFixedRate(this, 1, 10, TimeUnit.SECONDS);
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                collectDataFromEquipment();
+            }
+        };
+        service.scheduleAtFixedRate(runnable, 1, 10, TimeUnit.SECONDS);
     }
 
     PrintWriter out = null;
@@ -53,20 +55,33 @@ public class CollectDataServlet extends HttpServlet implements Runnable {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+ /*执行定时任务，第二个参数是首次执行任务的延时，第三个参数是执行定时任务的
+                 间隔时间，第四个参数是时间的类型
+                 */
+        /*service = Executors
+                .newSingleThreadScheduledExecutor();
+
+        service.scheduleAtFixedRate(this, 1, 10, TimeUnit.SECONDS);*/
 
 
-        /*String cmd = req.getParameter("key").trim();
-        long start = System.currentTimeMillis();
+        /*new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                collectDataFromEquipment();
+            }
+        },3000,2000);*/
+        //String cmd = req.getParameter("key").trim();
+        /*long start = System.currentTimeMillis();
         req.setCharacterEncoding("utf-8");
         resp.setContentType("text/html;charset=utf-8");
         out = resp.getWriter();
         out.append("<center>");
         out.append("<table width=\"30%\" border=\"1\" cellspacing=\"0\" cellpadding=\"5\" bgcolor=\"#B5F900\">");
-        out.append("<tr><td align=\"right\">Key</td>" +
-                "<td>" + cmd + "</td></tr>");
+        *//*out.append("<tr><td align=\"right\">Key</td>" +
+                "<td>" + cmd + "</td></tr>");*//*
         out.append("<tr><td align=\"right\">请求次数统计</td>" +
                 "<td>" + (count++) + "</td></tr>");
-        printPue(out);
+        //printPue(out);
         long end = System.currentTimeMillis();
         out.append("<tr><td align=\"right\">耗时</td>" +
                 "<td>" + (end - start) + "</td></tr>");
@@ -83,12 +98,13 @@ public class CollectDataServlet extends HttpServlet implements Runnable {
     @Override
     public void destroy() {
         super.destroy();
-        if (!service.isShutdown()){
+        if (!service.isShutdown()) {
             service.shutdown();
         }
         service = null;
         out = null;
     }
+
 
     /**
      * 添加数据到数据库，包括DayKwh,MonthKwh,YearKwh,AccumDayKwh,AccumMonthKwh,AccumYearKwh.
@@ -96,15 +112,15 @@ public class CollectDataServlet extends HttpServlet implements Runnable {
     public void collectDataFromEquipment() {
         long start = System.currentTimeMillis();
         /*----------------------------------------------------------------*/
-
+        equipments = equipmentUtils.loadDevice();
         int deviceSize = equipments.length;//设备数量
-        //  System.out.println("数量"+deviceSize);
+//        System.out.println("数量" + deviceSize);
         if (null != equipments && 0 < deviceSize) {//判断是否已经配置设备
             for (int i = 0; i < deviceSize; i++) {//遍历所有设备
                 Equipment equipment = equipments[i];//得到设备实体
                 String id = equipment.getId();//当前操作的设备ID
-                byte[] cmd = deviceUtils.generateCommandsViaDevice(equipment);
-                params = deviceUtils.parseToParams(equipment);//解析设备的通信参数、
+                byte[] cmd = equipmentUtils.generateCommandsViaDevice(equipment);
+                params = equipmentUtils.parseToParams(equipment);//解析设备的通信参数、
                 portUtils.open(params);//依据生成的通信参数打开串口，通信开始
                 boolean flag = portUtils.getPortState();
                 /**
@@ -118,8 +134,7 @@ public class CollectDataServlet extends HttpServlet implements Runnable {
                         addData2Database(id, degrees);
                         // System.out.println("\n-***************************************************-");
                     }
-                } else
-                if (id.startsWith("DC")) {//判断为直流电间
+                } else if (id.startsWith("DC")) {//判断为直流电间
                     portUtils.sendMessage(cmd, DC_TIMEOUT);
                /*     for (byte b : cmd) {
                         System.out.print(b +" ");
@@ -153,6 +168,7 @@ public class CollectDataServlet extends HttpServlet implements Runnable {
      * @param degrees
      */
     private static void addData2Database(String id, float[] degrees) {
+      //  System.out.println("addData2Database");
         float curDegree;
         int route = 0;
         for (int j = 0; j < degrees.length; j++) {
@@ -239,7 +255,7 @@ public class CollectDataServlet extends HttpServlet implements Runnable {
 
 
     private static void updatePresentKwh(String table, String fk, float curDegree, int route) {
-        Calendar calendar =Calendar.getInstance();
+        Calendar calendar = Calendar.getInstance();
         PresentKwhDao dao = new PresentKwhDao();
         int curHour = DateUtils.getHours();
         int curPoint = DateUtils.getDay();
@@ -262,17 +278,17 @@ public class CollectDataServlet extends HttpServlet implements Runnable {
 //           System.out.println(" -- if (0 != routes)->> curHour = "+curHour);
 //            System.out.println(" -- if (0 != routes)->> updatePoint = "+curPoint);
 //            System.out.println(" -- if (0 != routes)->> lastPoint = "+lastPoint);
-            if ((0 == curHour && (curPoint > lastPoint))||(0 == curHour && (curPoint==1)) ) {//时间为0点，天数已经过去一天
+            if ((0 == curHour && (curPoint > lastPoint)) || (0 == curHour && (curPoint == 1))) {//时间为0点，天数已经过去一天
 //                System.out.println("月天"+calendar.get(Calendar.DAY_OF_MONTH));
 //                System.out.println("年天"+calendar.get(Calendar.DAY_OF_YEAR));
 //                System.out.println(table.equalsIgnoreCase(PresentKwhDao.KWH_DAY));
-                if(table.equalsIgnoreCase(PresentKwhDao.KWH_MONTH)&&(calendar.get(Calendar.DAY_OF_MONTH)==1)){
+                if (table.equalsIgnoreCase(PresentKwhDao.KWH_MONTH) && (calendar.get(Calendar.DAY_OF_MONTH) == 1)) {
                     dao.updateDataAtPoint(table, latestDegree, fk, route, lastPoint, curPoint, 0);
                     //  System.out.println("月表更新：" + dao.updateDataAtPoint(table, latestDegree, fk, route, lastPoint, curPoint, 0));
-                }else if (table.equalsIgnoreCase(PresentKwhDao.KWH_YEAR)&&(calendar.get(Calendar.DAY_OF_YEAR)==1)){
+                } else if (table.equalsIgnoreCase(PresentKwhDao.KWH_YEAR) && (calendar.get(Calendar.DAY_OF_YEAR) == 1)) {
                     dao.updateDataAtPoint(table, latestDegree, fk, route, lastPoint, curPoint, 0);
                     // System.out.println("年表更新：" + dao.updateDataAtPoint(table, latestDegree, fk, route, lastPoint, curPoint, 0));
-                }else if (table.equalsIgnoreCase(PresentKwhDao.KWH_DAY)){
+                } else if (table.equalsIgnoreCase(PresentKwhDao.KWH_DAY)) {
                     dao.updateDataAtPoint(table, latestDegree, fk, route, lastPoint, curPoint, 0);
                     // System.out.println("日表更新：" + dao.updateDataAtPoint(table, latestDegree, fk, route, lastPoint, curPoint, 0));
                 }
@@ -297,8 +313,5 @@ public class CollectDataServlet extends HttpServlet implements Runnable {
             dao.addDataAtPoint(table, new PresentKwh(id, fk, route, latestDegree, curPoint, 1));
         }
     }
-    @Override
-    public void run() {
-        collectDataFromEquipment();
-    }
+
 }

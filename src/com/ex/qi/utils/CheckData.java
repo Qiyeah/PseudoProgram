@@ -26,7 +26,7 @@ public class CheckData  {
         if(data[0]==126&&data[data.length-1]==13){//数据头尾，此为AC表
             //System.out.println("data.length="+data.length);
             if (data.length==2264){//判断长度
-                if(data[1]==50&&data[2]==49&&data[3]==48&&data[4]==49 ){//版本号和地址
+                if(data[1]==50&&data[2]==49 ){//版本号和地址
                     if (checksum(data)){//算校验码
                       //  s.append(new String(s1.getBytes(),"GBK"));
                       //  log.writeLog("check.log",s);

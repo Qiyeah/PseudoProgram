@@ -59,7 +59,7 @@ public class LogUtils {
 
     private void openIO(String fileName) {
         try {
-            File file = new File("e:"+separator+"PseudoProgram"+separator+"log"+separator+fileName);
+            File file = new File("d:"+separator+"PseudoProgram"+separator+"log"+separator+fileName);
             if (!file.exists()) {
                 file.getParentFile().mkdirs();
                 file.createNewFile();

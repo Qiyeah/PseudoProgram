@@ -3,7 +3,7 @@ package test;
 import com.ex.qi.entity.AC;
 import com.ex.qi.entity.Equipment;
 import com.ex.qi.entity.DC;
-import com.ex.qi.utils.DeviceUtils;
+import com.ex.qi.utils.EquipmentUtils;
 import com.ex.qi.utils.SerialPortUtils;
 
 import java.util.*;
@@ -30,15 +30,15 @@ public class TestSerialPort {
         }
         System.out.println();*/
 
-        DeviceUtils deviceUtils = new DeviceUtils();
-        Equipment[] equipments = deviceUtils.loadDevice();
+        EquipmentUtils equipmentUtils = new EquipmentUtils();
+        Equipment[] equipments = equipmentUtils.loadDevice();
 
         for (int i = 0; i < equipments.length; i++) {
             float[] degrres = new float[0];
             SerialPortUtils utils = new SerialPortUtils();
             Equipment equipment = equipments[i];
             String id = equipment.getId();
-            Map<String, Comparable> params = deviceUtils.parseToParams(equipment);
+            Map<String, Comparable> params = equipmentUtils.parseToParams(equipment);
             utils.open(params);
             float[] data = null;
             if (id.startsWith("AC")) {
